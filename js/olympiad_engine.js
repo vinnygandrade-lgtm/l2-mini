@@ -52,17 +52,20 @@ window.OlympiadEngine = {
         if (remetente === window.charName && evento !== 'oly_challenge_response') return; 
 
         // Log para debug de eventos recebidos
-        console.log(`📡 Evento Multi Oly: ${evento} de ${remetente} (Eu: ${window.charName})`);
+        console.log(`📡 Evento Multi Oly: ${evento} de ${remetente} (Eu: ${window.charName})`, dados);
 
         switch(evento) {
             case 'oly_challenge':
                 // Alguém está procurando luta
+                // Se eu estou no lobby e não tenho inimigo, aceito o desafio
                 if (this.lobbyAtivo && !this.inimigo && !this.ativo) {
+                    console.log(`⚔️ Desafio detectado de ${remetente}. Analisando...`);
                     this.aceitarDesafio(dados);
                 }
                 break;
             case 'oly_challenge_response':
                 // Alguém respondeu ao MEU desafio
+                // Verificamos se o sessionId bate para garantir que é o par correto
                 if (this.lobbyAtivo && !this.inimigo && !this.ativo && dados.sessionId === this.currentOlySessionId) {
                     console.log("⚔️ Oponente respondeu ao meu desafio:", dados.nome);
                     this.multiplayer = true;

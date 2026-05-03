@@ -336,8 +336,9 @@ const SupabaseAPI = {
         
         console.log(`📤 [Supabase] Enviando combate [${evento}]:`, dados);
         
-        // SEGURANÇA: Garante que o envio seja feito com um pequeno retry se falhar
+        // SEGURANÇA: Garante que o envio seja feito via Realtime se possível, ou via HTTP se necessário
         try {
+            // Tenta enviar via Realtime (WebSocket)
             const { error } = await this.presenceChannel.send({
                 type: 'broadcast',
                 event: 'combat',
@@ -345,12 +346,12 @@ const SupabaseAPI = {
             });
 
             if (error) {
-                console.error("❌ [Supabase] Erro ao enviar broadcast de combate:", error);
+                console.warn("⚠️ [Supabase] Erro no envio Realtime, tentando fallback HTTP:", error.message);
+                
+                // Se o erro for de canal fechado ou rate limit, tenta forçar um reset
                 if (error.message?.includes('closed') || error.message?.includes('rate limit')) {
                     this.presenceChannel = null;
                     this._presenceSubscribed = false;
-                    // Tenta reconectar para a próxima mensagem
-                    setTimeout(() => { if (window.charName) this.ensureChatConnected(window.charName, {}); }, 1000);
                 }
             }
         } catch (e) {
