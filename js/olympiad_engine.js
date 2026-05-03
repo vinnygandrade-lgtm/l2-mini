@@ -695,21 +695,6 @@ window.OlympiadEngine = {
             btn.innerText = (typeof window.t === 'function') ? window.t('game.olympiadUi.confirmed') : 'CONFIRMED';
         }
     },
-            // SEGURANÇA: Em modo online, não permitimos confirmação de bots
-            if (window.SupabaseAPI && window.SUPABASE_CONFIG && window.SUPABASE_CONFIG.enabled && window.SupabaseAPI.getUser()) {
-                console.log("ℹ️ Modo Online: Aguardando confirmação de jogador real...");
-                return;
-            }
-
-            // BOT (Apenas offline): Simula confirmação aleatória
-            const atraso = 1200 + Math.floor(Math.random() * 2500);
-            if (this.isRevanche && Math.random() < 0.3) {
-                this.timerConfirmRival = setTimeout(() => this.recusarRevanche(), atraso);
-            } else {
-                this.timerConfirmRival = setTimeout(() => this.confirmarRival(), atraso);
-            }
-        }
-    },
 
     recusarRevanche() {
         if (!this.lobbyAtivo) return;

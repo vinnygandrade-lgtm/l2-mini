@@ -120,9 +120,13 @@ const SupabaseAPI = {
             return;
         }
 
+        console.log("🔌 [NodeServer] Tentando conectar em:", this.nodeServerUrl);
+
         this.nodeSocket = io(this.nodeServerUrl, {
-            reconnectionAttempts: 5,
-            timeout: 10000
+            reconnectionAttempts: 10,
+            timeout: 20000,
+            transports: ['websocket', 'polling'], // Tenta WebSocket primeiro, depois polling
+            forceNew: true
         });
 
         this.nodeSocket.on('connect', () => {
@@ -537,6 +541,97 @@ const SupabaseAPI = {
                 };
             });
         } catch (err) { return null; }
+    },
+
+    /**
+     * Busca as mensagens do correio para o personagem atual.
+     */
+    async fetchMailbox(charName) {
+        if (!SUPABASE_CONFIG.enabled || !charName) return [];
+        if (!this.client) await this.init();
+        try {
+            const { data, error } = await this.client
+                .from('mailbox')
+                .select('*')
+                .eq('recipient_name', charName)
+                .order('created_at', { ascending: false });
+            if (error) throw error;
+            return data || [];
+        } catch (e) {
+            console.warn('[fetchMailbox]', e);
+            return [];
+        }
+    },
+
+    /**
+     * Envia um correio de forma segura via RPC.
+     */
+    async sendMail(recipient, subject, type, details) {
+        if (!SUPABASE_CONFIG.enabled || !recipient) return { success: false };
+        if (!this.client) await this.init();
+        try {
+            const { data, error } = await this.client.rpc('send_mail_secure', {
+                p_recipient_name: recipient, p_subject: subject, p_type: type, p_details: details
+            });
+            if (error) throw error;
+            return data || { success: true };
+        } catch (e) {
+            console.error('[sendMail RPC Error]', e);
+            return { success: false, error: e };
+        }
+    },
+
+    /**
+     * Resgata recompensas de um correio via RPC.
+     */
+    async claimMailReward(mailId) {
+        if (!SUPABASE_CONFIG.enabled || !mailId) return { success: false };
+        if (!this.client) await this.init();
+        try {
+            const { data, error } = await this.client.rpc('claim_mail_reward', { p_mail_id: mailId });
+            if (error) throw error;
+            return data || { success: true };
+        } catch (e) {
+            console.error('[claimMailReward RPC Error]', e);
+            return { success: false, error: e };
+        }
+    },
+
+    /**
+     * Marca uma mensagem como lida ou deleta.
+     */
+    async updateMailStatus(mailId, updates) {
+        if (!SUPABASE_CONFIG.enabled || !mailId) return;
+        if (!this.client) await this.init();
+        try {
+            await this.client.from('mailbox').update(updates).eq('id', mailId);
+        } catch (e) { console.warn('[updateMailStatus]', e); }
+    },
+
+    async deleteMail(mailId) {
+        if (!SUPABASE_CONFIG.enabled || !mailId) return;
+        if (!this.client) await this.init();
+        try {
+            await this.client.from('mailbox').delete().eq('id', mailId);
+        } catch (e) { console.warn('[deleteMail]', e); }
+    },
+
+    /**
+     * Busca os status autoritativos de um jogador (recalculados no servidor).
+     */
+    async getPlayerStatsAutoritativo(charName) {
+        if (!SUPABASE_CONFIG.enabled || !charName) return { success: false };
+        if (!this.client) await this.init();
+        try {
+            const { data, error } = await this.client.rpc('get_player_stats_autoritativo', {
+                p_target_char_name: charName
+            });
+            if (error) throw error;
+            return data || { success: true };
+        } catch (e) {
+            console.error('[getPlayerStatsAutoritativo RPC Error]', e);
+            return { success: false, error: e };
+        }
     }
 };
 

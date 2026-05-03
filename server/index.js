@@ -4,14 +4,31 @@ const { Server } = require('socket.io');
 const cors = require('cors');
 
 const app = express();
-app.use(cors());
+
+// Configuração de CORS robusta para Express
+app.use(cors({
+    origin: "*",
+    methods: ["GET", "POST"],
+    allowedHeaders: ["Content-Type"]
+}));
+
+// Rota de Health Check para diagnóstico
+app.get('/', (req, res) => {
+    res.send('L2 Mini Arena Server is running!');
+});
+
+app.get('/health', (req, res) => {
+    res.status(200).json({ status: 'ok', players: io.engine.clientsCount });
+});
 
 const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
-        origin: "*", // Em produção, coloque o domínio do seu jogo
-        methods: ["GET", "POST"]
-    }
+        origin: "*", // Permite qualquer origem para evitar bloqueios no Vercel/GitHub Pages
+        methods: ["GET", "POST"],
+        credentials: true
+    },
+    allowEIO3: true // Compatibilidade extra
 });
 
 // --- ESTADO DO SERVIDOR (MMO STYLE) ---
