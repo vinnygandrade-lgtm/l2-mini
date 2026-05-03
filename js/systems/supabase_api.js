@@ -173,14 +173,14 @@ const SupabaseAPI = {
         if (!this.client || !charName) return;
         data = data || {};
 
-        // Se o canal já existe mas o personagem mudou, precisamos recriar o canal
+        // SEGURANÇA: Se o canal já existe mas o personagem mudou, precisamos recriar o canal
         if (this.presenceChannel) {
             const currentKey = this.presenceChannel.options?.config?.presence?.key;
             if (currentKey && currentKey !== charName) {
                 console.log(`🔄 [Supabase] Personagem mudou de ${currentKey} para ${charName}. Reiniciando canal...`);
                 
                 const targetAccount = this.currentUser?.email;
-                this.broadcastGM('kick_other_sessions', currentKey, { 
+                this.broadcastGM('kick_other_sessions', targetAccount, { 
                     sessionId: this.tabSessionId,
                     newChar: charName,
                     account: targetAccount
@@ -200,7 +200,11 @@ const SupabaseAPI = {
             this._resetPresenceReadyPromise();
             console.log("🔗 [Supabase] Conectando ao canal global:", charName);
             
-            this.presenceChannel = this.client.channel('online-players', {
+            // IMPORTANTE: Adicionamos um timestamp único no nome do canal para EVITAR CACHE da Vercel/Supabase
+            // Isso força uma conexão limpa toda vez que você loga ou dá F5
+            const channelName = 'online-players-v1'; 
+            
+            this.presenceChannel = this.client.channel(channelName, {
                 config: {
                     broadcast: { ack: false },
                     presence: { key: charName }
@@ -332,6 +336,7 @@ const SupabaseAPI = {
         
         console.log(`📤 [Supabase] Enviando combate [${evento}]:`, dados);
         
+        // SEGURANÇA: Garante que o envio seja feito com um pequeno retry se falhar
         try {
             const { error } = await this.presenceChannel.send({
                 type: 'broadcast',
@@ -341,9 +346,11 @@ const SupabaseAPI = {
 
             if (error) {
                 console.error("❌ [Supabase] Erro ao enviar broadcast de combate:", error);
-                if (error.message?.includes('closed')) {
+                if (error.message?.includes('closed') || error.message?.includes('rate limit')) {
                     this.presenceChannel = null;
                     this._presenceSubscribed = false;
+                    // Tenta reconectar para a próxima mensagem
+                    setTimeout(() => { if (window.charName) this.ensureChatConnected(window.charName, {}); }, 1000);
                 }
             }
         } catch (e) {

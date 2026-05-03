@@ -390,14 +390,16 @@ window.OlympiadEngine = {
                     window.SupabaseAPI.broadcastCombat('oly_challenge', dadosDesafio);
                     
                     // Inicia um intervalo de re-broadcast para garantir que novos jogadores vejam o lobby
+                    if (this.challengeInterval) clearInterval(this.challengeInterval);
                     this.challengeInterval = setInterval(() => {
                         if (this.lobbyAtivo && !this.inimigo && !this.ativo) {
+                            console.log("📡 Re-enviando desafio Olympiad...");
                             window.SupabaseAPI.broadcastCombat('oly_challenge', dadosDesafio);
                         } else {
                             clearInterval(this.challengeInterval);
                         }
-                    }, 3000); // Reduzi para 3s para ser mais agressivo na busca
-                }, 500);
+                    }, 2500); // Mais agressivo ainda para vencer o cache
+                }, 1000);
             });
         }
 
