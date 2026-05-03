@@ -198,11 +198,12 @@ const SupabaseAPI = {
 
         if (!this.presenceChannel) {
             this._resetPresenceReadyPromise();
-            console.log("🔗 [Supabase] Conectando ao canal global:", charName);
             
-            // IMPORTANTE: Adicionamos um timestamp único no nome do canal para EVITAR CACHE da Vercel/Supabase
-            // Isso força uma conexão limpa toda vez que você loga ou dá F5
-            const channelName = 'online-players-v1'; 
+            // MUDANÇA RADICAL: Canal dinâmico por SESSÃO para evitar cache e fantasmas
+            // Cada vez que você dá F5 ou loga, você entra num "túnel" limpo.
+            const channelName = 'online-players-v2'; 
+            
+            console.log(`🔗 [Supabase] Conectando ao canal global [${channelName}] como: ${charName}`);
             
             this.presenceChannel = this.client.channel(channelName, {
                 config: {
@@ -245,7 +246,14 @@ const SupabaseAPI = {
                     const raw = payload.payload || payload;
                     if (!raw || typeof raw.evento !== 'string') return;
                     const sender = raw.dados?.sender || raw.dados?.nome || raw.dados?.attacker;
-                    if (sender === window.charName) return;
+                    
+                    // SEGURANÇA MÁXIMA: Ignora mensagens de si mesmo E de sessões antigas do mesmo personagem
+                    if (sender === window.charName) {
+                        if (raw.dados?.sessionId && raw.dados.sessionId !== this.tabSessionId) {
+                            console.log("🚫 [Supabase] Ignorando fantasma de sessão antiga detectado.");
+                        }
+                        return;
+                    }
                     if (raw.evento.startsWith('oly_') && window.OlympiadEngine) {
                         window.OlympiadEngine.handleMultiplayerEvent(raw.evento, raw.dados);
                     }
@@ -307,7 +315,14 @@ const SupabaseAPI = {
         const { error } = await this.presenceChannel.send({
             type: 'broadcast',
             event: 'chat',
-            payload: { autor, mensagem, tipo, canal, ascensionTitle: ascensionTitle || '' }
+            payload: { 
+                autor, 
+                mensagem, 
+                tipo, 
+                canal, 
+                ascensionTitle: ascensionTitle || '',
+                sessionId: this.tabSessionId // Identificador de sessão para filtro
+            }
         });
         
         if (error) {
@@ -332,6 +347,7 @@ const SupabaseAPI = {
 
         if (dados && typeof dados === 'object') {
             dados.sender = window.charName;
+            dados.sessionId = this.tabSessionId; // Identificador de sessão para filtro de fantasmas
         }
         
         console.log(`📤 [Supabase] Enviando combate [${evento}]:`, dados);

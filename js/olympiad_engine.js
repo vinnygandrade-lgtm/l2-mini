@@ -51,6 +51,12 @@ window.OlympiadEngine = {
         // Mas permite se for uma resposta a um desafio (para garantir que o pareamento feche)
         if (remetente === window.charName && evento !== 'oly_challenge_response') return; 
 
+        // SEGURANÇA EXTRA: Se o evento tem um sessionId e é diferente do meu atual para o mesmo nome, é fantasma
+        if (remetente === window.charName && dados.sessionId && dados.sessionId !== this.currentOlySessionId) {
+            console.log("🚫 [Oly] Bloqueando evento de fantasma (Session ID divergente)");
+            return;
+        }
+
         // Log para debug de eventos recebidos
         console.log(`📡 Evento Multi Oly: ${evento} de ${remetente} (Eu: ${window.charName})`, dados);
 
