@@ -43,6 +43,7 @@ const SupabaseAPI = {
                     const targetAccount = this.currentUser.email;
                     
                     const sendKick = () => {
+                        console.log("🚀 [Sessão] Enviando sinal de encerramento para outras abas da conta:", targetAccount);
                         this.broadcastGM('kick_other_sessions', targetAccount, { 
                             sessionId: this.tabSessionId,
                             reason: 'multi_login',
@@ -50,10 +51,10 @@ const SupabaseAPI = {
                         });
                     };
 
-                    // Envia o kick imediatamente e reforça depois
-                    sendKick();
+                    // Envia o kick imediatamente e reforça depois para garantir que o canal está ouvindo
                     setTimeout(sendKick, 1000);
                     setTimeout(sendKick, 3000);
+                    setTimeout(sendKick, 6000); // Reforço extra para conexões lentas
 
                     if (window.mostrarAviso) window.mostrarAviso(typeof window.t === 'function' ? window.t('game.cloud.syncConnected') : "Cloud Sync Connected");
                 } else if (event === 'SIGNED_OUT') {
