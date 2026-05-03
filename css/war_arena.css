@@ -1,0 +1,162 @@
+/* ========================================== */
+/* WAR ARENA 2.0 - PROFESSIONAL VISUALS      */
+/* ========================================== */
+
+:root {
+    --war-bg-dark: #0a0705;
+    --war-accent-red: #ef4444;
+    --war-accent-green: #22c55e;
+    --war-accent-gold: #facc15;
+    --war-border-bronze: #735939;
+}
+
+/* Background Dinâmico */
+#tela-clan-war {
+    background: radial-gradient(circle at center, #1a100a 0%, var(--war-bg-dark) 100%);
+    overflow: hidden;
+    position: relative;
+}
+
+/* Efeito de Fumaça/Neblina de Guerra */
+#tela-clan-war::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; width: 200%; height: 200%;
+    background: url('https://www.transparenttextures.com/patterns/asfalt-dark.png');
+    opacity: 0.15;
+    animation: smokeMove 60s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes smokeMove {
+    from { transform: translate(0, 0); }
+    to { transform: translate(-50%, -50%); }
+}
+
+/* Cards de Unidade Profissionais */
+.war-unit-card-v2 {
+    width: 220px;
+    background: linear-gradient(180deg, rgba(30, 20, 15, 0.95) 0%, rgba(10, 5, 5, 0.98) 100%);
+    border: 1px solid var(--war-border-bronze);
+    border-radius: 10px;
+    padding: 12px;
+    position: relative;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.8), inset 0 0 15px rgba(115, 89, 57, 0.2);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.war-unit-card-v2.target-active {
+    border-color: var(--war-accent-gold);
+    box-shadow: 0 0 20px rgba(250, 204, 21, 0.3), inset 0 0 10px rgba(250, 204, 21, 0.1);
+    transform: scale(1.05);
+}
+
+/* Avatar com Respiração */
+.war-avatar-wrapper {
+    width: 50px;
+    height: 50px;
+    background: #000;
+    border-radius: 6px;
+    border: 1px solid #3d2b1f;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+
+.war-avatar-img {
+    width: 140%;
+    margin-left: -20%;
+    transition: filter 0.5s;
+    animation: breathing 4s ease-in-out infinite;
+}
+
+@keyframes breathing {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+.unit-dead .war-avatar-img {
+    filter: grayscale(1) brightness(0.5);
+    animation: none;
+}
+
+/* Barras de Status Modernas */
+.war-bar-container {
+    width: 100%;
+    height: 8px;
+    background: #000;
+    border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid #222;
+    position: relative;
+}
+
+.war-bar-fill {
+    height: 100%;
+    transition: width 0.4s cubic-bezier(0.1, 0.7, 0.1, 1);
+    position: relative;
+}
+
+.war-hp-fill { background: linear-gradient(90deg, #991b1b, #ef4444); box-shadow: 0 0 8px rgba(239, 68, 68, 0.5); }
+.war-cp-fill { background: linear-gradient(90deg, #a16207, #facc15); box-shadow: 0 0 8px rgba(250, 204, 21, 0.5); }
+.war-mp-fill { background: linear-gradient(90deg, #1e40af, #3b82f6); }
+
+/* Efeito de Impacto (Shake) */
+.impact-shake {
+    animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+@keyframes shake {
+    10%, 90% { transform: translate3d(-2px, 0, 0); }
+    20%, 80% { transform: translate3d(4px, 0, 0); }
+    30%, 50%, 70% { transform: translate3d(-6px, 0, 0); }
+    40%, 60% { transform: translate3d(6px, 0, 0); }
+}
+
+/* Ataque (Jump) */
+.attack-jump-aliado { animation: jumpAliado 0.4s ease-out; }
+.attack-jump-inimigo { animation: jumpInimigo 0.4s ease-out; }
+
+@keyframes jumpAliado {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-20px) scale(1.05); }
+    100% { transform: translateY(0); }
+}
+
+@keyframes jumpInimigo {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(20px) scale(1.05); }
+    100% { transform: translateY(0); }
+}
+
+/* Dano Flutuante 2.0 */
+.war-damage-v2 {
+    position: absolute;
+    font-family: 'Tahoma', sans-serif;
+    font-weight: 900;
+    pointer-events: none;
+    z-index: 100;
+    text-shadow: 2px 2px 0 #000;
+    animation: floatDamage 1s ease-out forwards;
+}
+
+@keyframes floatDamage {
+    0% { transform: translateY(0) scale(0.5); opacity: 0; }
+    20% { transform: translateY(-20px) scale(1.2); opacity: 1; }
+    100% { transform: translateY(-60px) scale(1); opacity: 0; }
+}
+
+/* Battle Feed */
+#war-live-events-v2 {
+    background: rgba(0,0,0,0.7);
+    border: 1px solid var(--war-border-bronze);
+    border-radius: 8px;
+    padding: 8px;
+    font-size: 10px;
+    color: #d1d5db;
+    backdrop-filter: blur(4px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}

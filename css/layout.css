@@ -1,0 +1,338 @@
+/* ========================================= */
+/* LAYOUT, SHELL & CHAT                     */
+/* ========================================= */
+
+.game-container { 
+    background: var(--l2-bg-shell); 
+    width: 100%; max-width: 450px; height: 100dvh; margin: 0 auto; 
+    padding: 0; border-left: 2px solid var(--l2-border-strong); border-right: 2px solid var(--l2-border-strong); 
+    box-shadow: 0 0 24px rgba(0,0,0,0.55); position: relative; display: flex; 
+    flex-direction: column; box-sizing: border-box; overflow: hidden;
+    min-height: 0;
+}
+
+.screen { 
+    display: none; flex-direction: column; align-items: center; justify-content: flex-start; 
+    width: 100%; height: 100%; background: inherit; position: relative; box-sizing: border-box; overflow: hidden;
+}
+
+/* Fluxo dentro do shell: ocupar altura e permitir scroll no viewport (perfis altos não ficam atrás do chat). */
+.game-container > .screen.active-screen {
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+.screen:not(.active-screen) { display: none !important; }
+.active-screen { display: flex !important; }
+
+/* Ajustes de Viewport para evitar scroll duplo em telas cheias */
+.active-screen:has(.npc-menu[style*="display: flex"]) .game-viewport {
+    overflow-y: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Garante que o conteúdo da tela social ocupe altura total para o mercado scrollar */
+.active-screen:has(#menu-social-market[style*="display: flex"]) #tela-social {
+    height: 100%;
+    min-height: 0;
+    display: flex !important;
+    flex-direction: column;
+    padding: 10px !important;
+}
+
+.npc-menu[style*="display: flex"] {
+    flex: 1;
+    display: flex !important;
+    flex-direction: column;
+    min-height: 0; /* Essencial para flex-child scroll */
+}
+
+#game-viewport > .screen-content:not(#tela-raid-arena):not(#tela-olympiad-arena):not(#tela-clan-war):not(#tela-perfil) {
+    flex: 1 1 0%;
+    min-height: 0;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain;
+}
+
+/* Perfil: shell flex no viewport + painel interior com overflow (display:contents quebrava scroll em vários navegadores) */
+#game-viewport > #tela-perfil.screen-content {
+    flex: 1 1 0%;
+    min-height: 0;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+}
+
+#game-viewport > #tela-perfil .profile-scroll-pane {
+    flex: 1 1 0%;
+    min-height: 0;
+    height: auto;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+    overflow-y: auto;
+    scrollbar-gutter: stable;
+    scrollbar-width: thin;
+    scrollbar-color: #8b7358 #17130f;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain;
+}
+
+#game-viewport > #tela-perfil .profile-scroll-pane::-webkit-scrollbar {
+    width: 8px;
+}
+
+#game-viewport > #tela-perfil .profile-scroll-pane::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.35);
+    border-radius: 6px;
+}
+
+#game-viewport > #tela-perfil .profile-scroll-pane::-webkit-scrollbar-thumb {
+    background: #5a4634;
+    border-radius: 6px;
+    border: 1px solid #3d2b1f;
+}
+
+#game-viewport > #tela-perfil .profile-scroll-pane::-webkit-scrollbar-thumb:hover {
+    background: #ca8a04;
+}
+
+#screen-game {
+    min-height: 0;
+}
+
+/* Coluna única: a rolagem fica dentro de cada #tela-*, não no body */
+#screen-game > .game-viewport {
+    align-self: stretch;
+    width: 100%;
+    flex: 1 1 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+.screen-content {
+    width: 100%; min-height: 0; display: none; flex-direction: column; align-items: stretch; 
+    justify-content: flex-start; margin: 0; background: var(--l2-panel-overlay); 
+    border: 1px solid var(--l2-border-soft); border-radius: 8px; padding: 12px 14px; 
+    box-sizing: border-box; box-shadow: inset 0 0 12px rgba(0,0,0,0.45); 
+}
+
+.action-bar {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 4px;
+    padding: 7px 5px;
+    background: linear-gradient(180deg, #181411 0%, #100d0a 100%);
+    border-top: 2px solid var(--l2-border-strong);
+    border-bottom: 1px solid var(--l2-border-soft);
+    box-shadow: 0 -4px 12px rgba(0,0,0,0.4);
+    width: 100%;
+    z-index: 105;
+    flex-shrink: 0;
+}
+
+.shortcut-slot {
+    aspect-ratio: 1/1;
+    background: linear-gradient(145deg, #221c17 0%, #14110e 100%);
+    border: 1px solid var(--l2-border-strong);
+    border-radius: 4px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: 0.15s;
+    overflow: hidden;
+}
+
+.shortcut-slot:hover {
+    border-color: #facc15;
+    background: #1f1813;
+}
+
+.shortcut-slot:active {
+    transform: scale(0.95);
+}
+
+#grid-seletor-global .shortcut-slot {
+    transition: transform 0.2s, border-color 0.2s;
+    background: linear-gradient(135deg, #1a1410 0%, #0a0806 100%) !important;
+}
+
+#grid-seletor-global .shortcut-slot:hover {
+    border-color: #facc15 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(250, 204, 21, 0.2);
+}
+
+#grid-seletor-global .shortcut-slot:active {
+    transform: scale(0.9);
+}
+
+.shortcut-key {
+    position: absolute;
+    top: 1px;
+    left: 2px;
+    font-size: 8px;
+    color: var(--l2-text-secondary);
+    font-weight: bold;
+    pointer-events: none;
+    text-shadow: 1px 1px 0 #000, 0 0 2px rgba(0,0,0,0.9);
+}
+
+.shortcut-count {
+    position: absolute;
+    bottom: 1px;
+    right: 2px;
+    font-size: 9px;
+    color: #fff;
+    font-weight: bold;
+    pointer-events: none;
+    text-shadow: 1px 1px 1px #000;
+}
+
+.cd-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.75);
+    z-index: 5;
+    transition: height 0.05s linear;
+}
+
+.auto-shot-active {
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 8px rgba(59, 130, 246, 0.6), inset 0 0 10px rgba(59, 130, 246, 0.3);
+    animation: shot-pulse 1.5s infinite ease-in-out;
+}
+
+@keyframes shot-pulse {
+    0% { filter: brightness(1); }
+    50% { filter: brightness(1.3); }
+    100% { filter: brightness(1); }
+}
+
+@keyframes pulsateAura {
+    0% { opacity: 0.3; transform: scale(0.95); }
+    50% { opacity: 0.7; transform: scale(1.05); }
+    100% { opacity: 0.3; transform: scale(0.95); }
+}
+
+.glow-yellow {
+    animation: glow-yellow-anim 1s infinite alternate;
+}
+
+@keyframes glow-yellow-anim {
+    from { border-color: #3d2b1f; box-shadow: 0 0 5px rgba(0,0,0,0.5); }
+    to { border-color: #facc15; box-shadow: 0 0 15px rgba(250, 204, 21, 0.4); }
+}
+
+/* Travel Menu / Tabs */
+.travel-menu { 
+    display: flex; 
+    gap: 0; 
+    width: 100%; 
+    background: linear-gradient(180deg, #231d17 0%, #14110e 100%); 
+    border-top: 1px solid var(--l2-border-soft); 
+    border-bottom: 2px solid var(--l2-border-strong); 
+    flex-shrink: 0; 
+    z-index: 101; 
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+}
+
+.btn-travel { 
+    flex: 1; 
+    padding: 14px 2px 15px;
+    background: transparent; 
+    border: none; 
+    border-right: 1px solid rgba(90, 70, 50, 0.45); 
+    font-size: 0.78em; 
+    color: var(--l2-text-secondary); 
+    cursor: pointer; 
+    font-family: 'Cinzel', serif; 
+    font-weight: 700; 
+    letter-spacing: 1px; 
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    text-align: center; 
+    text-transform: uppercase;
+    position: relative;
+    overflow: hidden;
+    min-height: 44px;
+}
+
+.btn-travel:last-child { border-right: none; }
+
+.btn-travel::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background: #eab308;
+    transition: all 0.3s;
+    transform: translateX(-50%);
+}
+
+.btn-travel.active { 
+    background: rgba(234, 179, 8, 0.05); 
+    color: #facc15; 
+    text-shadow: 0 0 10px rgba(250, 204, 21, 0.4); 
+}
+
+.btn-travel.active::after {
+    width: 80%;
+}
+
+.btn-travel:hover:not(.active) {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.02);
+}
+.btn-travel--accent:not(.active) { color: #a78bfa; }
+
+/* Log / Chat */
+.log-container { width: 100%; height: 148px; background: rgba(18, 15, 12, 0.98); border-top: 2px solid var(--l2-border-strong); z-index: 100; display: none !important; flex-direction: column; flex-shrink: 0; margin-top: auto; box-shadow: 0 -6px 16px rgba(0,0,0,0.35); }
+.game-container.game-ingame .log-container { display: flex !important; }
+.log-tabs { display: flex; background: #221c17; border-bottom: 1px solid var(--l2-border-soft); }
+.log-tab { flex: 1; padding: 8px 6px; font-size: 10px; font-weight: bold; color: var(--l2-text-muted); cursor: pointer; text-align: center; font-family: 'Cinzel', serif; transition: 0.2s; border-right: 1px solid var(--l2-border-soft); }
+.log-tab:last-child { border-right: none; }
+.log-tab.active { background: #2f2820; color: var(--l2-accent-gold); border-bottom: 2px solid #eab308; }
+.log-content { flex: 1; padding: 10px; font-size: 0.8em; line-height: 1.45; overflow-y: auto; text-align: left; display: none; color: var(--l2-text-secondary); position: relative; background: #100d0a; box-sizing: border-box; }
+.log-content.active { display: block; }
+#log { border-left: 3px solid #eab308; }
+#chat-global { border-left: 3px solid #3b82f6; display: none; flex-direction: column-reverse; gap: 6px; padding: 10px; }
+#chat-clan { border-left: 3px solid #ca8a04; display: none; flex-direction: column-reverse; gap: 6px; padding: 10px; }
+#chat-global.active, #chat-clan.active { display: flex; }
+.chat-msg { margin-bottom: 2px; line-height: 1.45; background: rgba(255, 255, 255, 0.06); padding: 7px 9px; border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.08); }
+.chat-author { font-weight: bold; margin-right: 5px; cursor: pointer; text-decoration: underline dotted rgba(245, 217, 66, 0.35); font-size: 1.05em; }
+.chat-author.player { color: #22c55e; }
+.chat-author.papel { color: #e5e7eb; }
+.chat-author.madeira { color: #b45309; }
+.chat-author.cobre { color: #d97706; }
+.chat-author.prata { color: #9ca3af; }
+.chat-author.ouro { color: #facc15; }
+.chat-author.platina { color: #38bdf8; }
+.chat-author.diamante { color: #818cf8; }
+.chat-author.lendario { color: #f43f5e; text-shadow: 0 0 5px rgba(244, 63, 94, 0.4); }
+.chat-author.mitico { color: #a855f7; text-shadow: 0 0 8px rgba(168, 85, 247, 0.6); font-weight: 900; }

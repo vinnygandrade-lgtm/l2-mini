@@ -1,0 +1,101 @@
+/* ========================================= */
+/* BASE & GENERAL STYLES                     */
+/* ========================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; }
+
+/* --- Legibilidade & tom “dark confortável” (multiplayer / mobile) --- */
+:root {
+    --l2-bg-deep: #0c0b09;
+    --l2-bg-shell: linear-gradient(180deg, #262018 0%, #12100d 52%, #0c0b09 100%);
+    --l2-text-primary: #e9dcc8;
+    --l2-text-secondary: #c4b5a0;
+    --l2-text-muted: #9a8c78;
+    --l2-border-strong: #7a664f;
+    --l2-border-soft: #4f4032;
+    --l2-panel-overlay: rgba(26, 22, 18, 0.82);
+    --l2-accent-gold: #f5d942;
+    --l2-focus-ring: #fbbf24;
+}
+
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+
+body { 
+    background: var(--l2-bg-deep); 
+    color: var(--l2-text-primary); 
+    font-family: 'Tahoma', 'Verdana', sans-serif; 
+    text-align: center; 
+    margin: 0; 
+    padding: 0;
+    overflow: hidden; 
+    height: 100dvh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
+}
+
+button:focus-visible,
+.btn-l2:focus-visible,
+.btn-travel:focus-visible,
+a:focus-visible,
+.log-tab:focus-visible,
+.shortcut-slot:focus-visible {
+    outline: 2px solid var(--l2-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Scrollbars */
+#log, #chat-global, .store-items-grid, .inventory-grid, #raid-combat-log, #olympiad-log,
+#market-list, #market-my-listings, #market-seletor-grid, .log-content,
+#game-viewport > #tela-perfil .profile-scroll-pane {
+    scrollbar-width: thin;
+    scrollbar-color: #8b7358 #17130f;
+    -webkit-overflow-scrolling: touch;
+}
+
+#market-list::-webkit-scrollbar, #market-my-listings::-webkit-scrollbar, #market-seletor-grid::-webkit-scrollbar {
+    width: 6px;
+}
+
+#market-list::-webkit-scrollbar-thumb, #market-my-listings::-webkit-scrollbar-thumb, #market-seletor-grid::-webkit-scrollbar-thumb {
+    background: #5a4634;
+    border-radius: 3px;
+}
+
+/* Animations */
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes modalAppear { 
+    from { transform: scale(0.95); opacity: 0; } 
+    to { transform: scale(1); opacity: 1; } 
+}
+@keyframes modalAppearCentered { 
+    from { transform: translate(-50%, -50%) scale(0.95); opacity: 0; } 
+    to { transform: translate(-50%, -50%) scale(1); opacity: 1; } 
+}
+@keyframes slideDownToast { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+@keyframes fadeOutToast { from { opacity: 1; } to { opacity: 0; } }
+@keyframes pulse-opacity { 0% { opacity: 0.2; } 100% { opacity: 0.95; } }
+@keyframes notif-flash {
+    0% { filter: brightness(1) drop-shadow(0 0 2px #4338ca); transform: scale(1); }
+    50% { filter: brightness(1.5) drop-shadow(0 0 10px #6366f1); transform: scale(1.1); }
+    100% { filter: brightness(1) drop-shadow(0 0 2px #4338ca); transform: scale(1); }
+}
+@keyframes new-mail-pulse {
+    0% { transform: translateX(-50%) scale(1); box-shadow: 0 0 5px #4338ca; }
+    50% { transform: translateX(-50%) scale(1.1); box-shadow: 0 0 20px #6366f1; }
+    100% { transform: translateX(-50%) scale(1); box-shadow: 0 0 5px #4338ca; }
+}
+.notif-icon-flashing { animation: notif-flash 1.2s infinite ease-in-out; }
+
+/* Toast Notifications */
+#toast-container { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; pointer-events: none; width: 90%; max-width: 400px; }
+.toast-msg { background: rgba(32, 27, 22, 0.97); border: 1px solid var(--l2-accent-gold); color: #fffaf0; padding: 11px 16px; border-radius: 4px; font-size: 0.88em; font-weight: bold; text-align: center; box-shadow: 0 4px 18px rgba(0,0,0,0.75); animation: slideDownToast 0.3s ease-out forwards, fadeOutToast 0.5s ease-in 2.5s forwards; line-height: 1.35; }

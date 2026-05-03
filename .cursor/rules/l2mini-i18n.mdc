@@ -1,0 +1,40 @@
+---
+description: L2 Mini — internacionalização (i18n) para multiplayer real
+alwaysApply: true
+---
+
+# i18n (PT-BR + EN)
+
+## Objetivo
+- Cada jogador escolhe o idioma **no cliente**; não é necessário broadcast do servidor para UI.
+- **Persistência:** campo `uiLocale` no save do personagem (`salvarJogo` / JSONB `characters.data`) para nuvem e entre dispositivos.
+- **Antes do personagem:** preferência em `localStorage` (`l2mini_locale`).
+
+## API
+- `window.t('chave.caminho', { param: 'valor' })` — interpola `{param}` na string.
+- `window.I18n.setLocale('en' | 'pt-BR')` — persiste no device e, se houver `charName`, chama `salvarJogo()`.
+- `window.I18n.applyFromSave(data.uiLocale)` — ao `carregarJogo`, após aplicar dados do personagem.
+- `window.I18n.getArray('auth.tips')` — listas por locale (ex.: dicas no loading).
+- Botões dos modais `l2Alert` / `l2Confirm` usam chaves `modal.ok`, `modal.cancel`, `modal.confirm`, `modal.titleMessage`, `modal.titleConfirmation`.
+- Strings estáticas no HTML: `data-i18n="login.enter"`, placeholders `data-i18n-placeholder="login.passwordPlaceholder"`, `data-i18n-title="hud.mailboxTitle"`.
+- Sem novo texto visível só em um idioma: **sempre** adicionar a chave em `js/i18n/locales_bundle.js` em **en** e **pt-BR** (fallback usa `en` se faltar tradução).
+
+## Catálogos grandes (skills, items, classes)
+- Preferir `descKey` no dado + entrada em `locales_bundle` (ou ficheiros por domínio) em vez de duplicar lógica.
+- Não usar `JSON.parse(JSON.stringify(item))` para cópia de equipamento (regra global do projeto).
+
+## GM / servidor
+- Mensagens vindas do Supabase: idealmente campo único por idioma (`message_en` / `message_pt`) ou payload estruturado; o cliente escolhe com `I18n.getLocale()`.
+
+## Ordem de scripts
+- `js/i18n/i18n.js` **depois** `js/core_globals.js`, em seguida `js/i18n/locales_bundle.js` (define `window.I18N_LOCALES`).
+- Inline ou script final que chama **`I18n.init()`** só **depois** dos dois ficheiros acima (carrega packs + `refreshDom`).
+
+## Inicialização
+- `I18n.init()` em `index.html` após `i18n.js` **e** `locales_bundle.js`.
+
+## Resiliência
+- **`t()`**, **`refreshDom`** e aplicação por elemento são **defensivos** (`try/catch`, chave inválida → fallback seguro): um bundle corrupto, nó DOM estranho ou chave em falha **não** deve derrubar o jogo inteiro.
+
+## Alinhamento com o GDD
+- Checklist evolutivo (persistência, economia, contratos, texto servidor): **§12** em `l2mini-project-rules.mdc`.
