@@ -184,7 +184,7 @@ window.OlympiadEngine = {
             case 'oly_challenge_response':
                 // Recebi resposta ao meu desafio.
                 if (this.lobbyAtivo && !this.inimigo && !this.ativo) {
-                    console.log("⚔️ [Oly] Oponente aceitou o desafio:", dados.nome);
+                    this.logOly("Oponente aceitou o desafio:", dados.nome);
                     this.vincularInimigo(dados);
                 }
                 break;
@@ -194,7 +194,7 @@ window.OlympiadEngine = {
                 if (this.lobbyAtivo && this.inimigo && this.sameCharName(remetente, this.inimigo.nome)) {
                     // Se o oponente diz que está confirmado, nós atualizamos aqui
                     if (dados.confirmado && !this.rivalConfirmou) {
-                        console.log("⚔️ [Oly] Sincronizando confirmação do rival via Heartbeat.");
+                        this.logOly("Sincronizando confirmação do rival via Heartbeat.");
                         this.rivalConfirmou = true;
                         this.atualizarStatusConfirmacao();
                     }
@@ -228,6 +228,49 @@ window.OlympiadEngine = {
                 }
                 break;
 
+            case 'oly_opponent_fled':
+                if (this.inimigo && this.sameCharName(remetente, this.inimigo.nome)) {
+                    this.logOly("Oponente fugiu da batalha!");
+                    this.escreverLog(`<span style="color:#facc15; font-weight:bold;">[Olympiad] ${this.inimigo.nome} fled the arena! You win by forfeit.</span>`);
+                    
+                    if (this.ativo) {
+                        window.l2Alert(mb('game.olympiad.opponentFled') || `${this.inimigo.nome} fled the arena! You win!`, "FORFEIT VICTORY");
+                        this.finalizar(true);
+                    }
+                }
+                break;
+
+            case 'oly_lobby_left':
+                // Oponente saiu do lobby (clicou em cancelar)
+                if (this.inimigo && this.sameCharName(remetente, this.inimigo.nome)) {
+                    this.logOly("Oponente saiu do lobby.");
+                    this.escreverLog(`<span style="color:#fca5a5;">[Olympiad] ${this.inimigo.nome} left the lobby.</span>`);
+                    
+                    // Limpa o inimigo e volta a procurar luta
+                    this.reset();
+                    this.lobbyAtivo = true;
+                    this.prepararTelaLobby();
+                    this.escreverLog(`<span style="color:#60a5fa; font-weight:bold;">[Multiplayer] Waiting for a new challenger...</span>`);
+                }
+                break;
+
+            case 'oly_session_closed':
+                // Oponente saiu da tela de resultado (não quis revanche)
+                if (this.inimigo && this.sameCharName(remetente, this.inimigo.nome)) {
+                    this.logOly("Oponente encerrou a sessão.");
+                    if (this.resumoAtivo || this.lobbyAtivo) {
+                        this.escreverLog(`<span style="color:#ef4444;">[Olympiad] ${this.inimigo.nome} left the session.</span>`);
+                        const btnRevanche = document.getElementById('btn-oly-revanche');
+                        if (btnRevanche) {
+                            btnRevanche.disabled = true;
+                            btnRevanche.style.opacity = '0.5';
+                            btnRevanche.innerText = "OPPONENT LEFT";
+                        }
+                        window.mostrarAviso(`${this.inimigo.nome} left the arena.`);
+                    }
+                }
+                break;
+
             case 'oly_hit':
                 if (this.inimigo && this.sameCharName(remetente, this.inimigo.nome)) {
                     this.receberDanoMultiplayer(dados.damage, dados.isCrit, dados.skillName);
@@ -247,17 +290,6 @@ window.OlympiadEngine = {
                     this.finalizar(true);
                 } else if (this.inimigo && this.sameCharName(dados.winner, this.inimigo.nome)) {
                     this.finalizar(false);
-                }
-                break;
-
-            case 'oly_opponent_fled':
-                if (this.inimigo && this.sameCharName(remetente, this.inimigo.nome)) {
-                    this.logOly("Oponente fugiu da batalha!");
-                    this.escreverLog(`<span style="color:#facc15; font-weight:bold;">[Olympiad] ${this.inimigo.nome} fled the arena! You win by forfeit.</span>`);
-                    if (window.mostrarAviso) window.mostrarAviso(mb('game.olympiad.opponentFled') || "Opponent fled!");
-                    
-                    // Finaliza com vitória forçada
-                    this.finalizar(true);
                 }
                 break;
         }
@@ -339,6 +371,12 @@ window.OlympiadEngine = {
     },
 
     receberDanoMultiplayer(dano, isCrit, skillName) {
+        // SEGURANÇA: Só recebe dano se a luta estiver ATIVA
+        if (!this.ativo) {
+            this.logOly("Ignorando dano: Duelo não está ativo.");
+            return;
+        }
+
         const rawD = Number(dano);
         if (!Number.isFinite(rawD) || rawD <= 0 || rawD > 5e7) return;
 
@@ -1567,8 +1605,10 @@ window.OlympiadEngine = {
         if (this.ativo) {
             const fleeMsg = Tol ? Tol('game.olympiad.logFledMidFight') : '[Olympiad] You fled the arena mid-fight!';
             this.escreverLog(`<span style="color:#ef4444; font-weight:bold;">${fleeMsg}</span>`);
-            if (typeof mostrarAviso === 'function') mostrarAviso(typeof window.t === 'function' ? window.t('game.olympiad.fledLostPoints') : "You fled and lost Olympiad points!");
             
+            // TELA DE AVISO PROFISSIONAL PARA QUEM FUGIU
+            window.l2Alert(mb('game.olympiad.youFled') || "You fled the arena mid-fight and lost points by forfeit.", "DUEL FORFEITED");
+
             // MULTIPLAYER: Avisar ao oponente que eu fugi
             if (this.multiplayer && window.SupabaseAPI) {
                 window.SupabaseAPI.broadcastCombat('oly_opponent_fled', {
@@ -1620,8 +1660,24 @@ window.OlympiadEngine = {
         const Tol = (typeof window.t === 'function') ? window.t : null;
         const cancelMsg = Tol ? Tol('game.olympiad.logLobbyCancelled') : '[Olympiad] Lobby cancelled.';
         this.escreverLog(`<span style="color:#fcd34d;">${cancelMsg}</span>`);
+        
+        // MULTIPLAYER: Avisar ao servidor e ao oponente que eu saí do lobby
+        if (window.SupabaseAPI) {
+            console.log("📡 [NodeServer] Saindo do lobby...");
+            if (window.SupabaseAPI.nodeSocket && window.SupabaseAPI.nodeSocket.connected) {
+                window.SupabaseAPI.nodeSocket.emit('oly_leave_lobby', { nome: window.charName });
+            }
+            
+            // Broadcast para o oponente limpar o pareamento visual dele
+            window.SupabaseAPI.broadcastCombat('oly_lobby_left', {
+                nome: window.charName,
+                olyPairSessionId: this.olyPairSessionId
+            });
+        }
+
+        this.reset(); // Limpa TUDO (inimigo, sessões, confirmações)
         this.lobbyAtivo = false;
-        this.inimigoRevanche = null; // Limpa ao cancelar
+        this.inimigoRevanche = null; 
         if (this.timerConfirmRival) clearTimeout(this.timerConfirmRival);
         this.salvarProgressoOlympiad();
         sairOlympiad(true);
@@ -1732,6 +1788,15 @@ window.OlympiadEngine = {
         const Tol = (typeof window.t === 'function') ? window.t : null;
         const sessMsg = Tol ? Tol('game.olympiad.logLeavingSession') : '[Olympiad] Leaving the arena session.';
         this.escreverLog(`<span style="color:#fcd34d;">${sessMsg}</span>`);
+        
+        // MULTIPLAYER: Avisar ao oponente que eu saí e não quero revanche
+        if (this.multiplayer && window.SupabaseAPI) {
+            window.SupabaseAPI.broadcastCombat('oly_session_closed', {
+                nome: window.charName,
+                olyPairSessionId: this.olyPairSessionId
+            });
+        }
+
         this.ativo = false;
         this.lobbyAtivo = false;
         this.resumoAtivo = false;

@@ -52,6 +52,17 @@ io.on('connection', (socket) => {
         io.to(roomId).emit('oly_player_entered', playerData);
     });
 
+    // SAIR DO LOBBY
+    socket.on('oly_leave_lobby', (data) => {
+        const roomId = 'olympiad_global';
+        if (rooms.has(roomId)) {
+            const room = rooms.get(roomId);
+            if (socket.charName) room.readyPlayers.delete(socket.charName.toLowerCase());
+        }
+        socket.leave(roomId);
+        console.log(`🚪 ${socket.charName || socket.id} saiu do lobby`);
+    });
+
     // 2. ENVIAR DESAFIO DIRETO (Broadcast para todos no lobby)
     socket.on('oly_send_challenge', (data) => {
         console.log(`📣 Desafio de ${socket.charName} enviado para todos.`);
