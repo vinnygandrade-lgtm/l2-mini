@@ -46,6 +46,7 @@ async function bootGame(): Promise<void> {
   await import('./ui/grade_ui');
   await import('./i18n/i18n');
   await import('./i18n/locales_bundle');
+  await import('./runtime/cloud_rpc_message');
   tickBoot(52, bootMsg('loading.phaseI18n', 'Loading languages...'));
 
   initI18nAndLanguageBar();

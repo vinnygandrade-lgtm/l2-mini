@@ -180,8 +180,10 @@ export const MarketCloud: MarketCloudApi = {
     };
   },
 
-  async fetchListings(): Promise<MarketListingEntry[]> {
-    if (!this.isAvailable() || !window.SupabaseAPI.client) return [];
+  async fetchListingsWithMeta(): Promise<{ listings: MarketListingEntry[]; error?: string }> {
+    if (!this.isAvailable() || !window.SupabaseAPI.client) {
+      return { listings: [], error: 'cloud_unavailable' };
+    }
 
     const client = window.SupabaseAPI.client;
     const { data, error } = await marketListingsTable(client)
@@ -196,23 +198,30 @@ export const MarketCloud: MarketCloudApi = {
         .order('created_at', { ascending: false });
       if (fallback.error) {
         console.error('[MarketCloud] fetchListings:', fallback.error.message);
-        return [];
+        return { listings: [], error: 'rpc_error' };
       }
-      return (fallback.data ?? [])
+      const listings = (fallback.data ?? [])
         .filter((r) => this.isListingActiveRow(r))
         .map((r) => this.mapRowToEntry(r))
         .filter((e): e is MarketListingEntry => e != null);
+      return { listings };
     }
 
     if (error) {
       console.error('[MarketCloud] fetchListings:', error.message);
-      return [];
+      return { listings: [], error: 'rpc_error' };
     }
 
-    return (data ?? [])
+    const listings = (data ?? [])
       .filter((r) => this.isListingActiveRow(r))
       .map((r) => this.mapRowToEntry(r))
       .filter((e): e is MarketListingEntry => e != null);
+    return { listings };
+  },
+
+  async fetchListings(): Promise<MarketListingEntry[]> {
+    const result = await this.fetchListingsWithMeta();
+    return result.listings;
   },
 
   async publishListing(payload: MarketPublishPayload): Promise<MarketOperationResult> {
@@ -264,8 +273,10 @@ export const MarketCloud: MarketCloudApi = {
     };
   },
 
-  async cancelListing(listingId: string, sellerCharName: string): Promise<boolean> {
-    if (!this.isAvailable() || !window.SupabaseAPI.client) return false;
+  async cancelListing(listingId: string, sellerCharName: string): Promise<MarketOperationResult> {
+    if (!this.isAvailable() || !window.SupabaseAPI.client) {
+      return { ok: false, error: 'cloud_unavailable' };
+    }
 
     const client = window.SupabaseAPI.client;
     const { data: rpcData, error: rpcError } = await client.rpc('market_cancel_listing', {
@@ -275,14 +286,18 @@ export const MarketCloud: MarketCloudApi = {
 
     const rpc = rpcData as MarketRpcPayload | null;
     if (!rpcError && rpc && (rpc.ok === true || rpc.success === true)) {
-      return true;
+      return { ok: true, cancelled: true };
+    }
+    if (rpc && (rpc.ok === false || rpc.success === false)) {
+      const code = rpc.error ? String(rpc.error) : 'cancel_failed';
+      return { ok: false, error: code, details: rpc };
     }
     if (
       rpcError &&
       !rpcErrorMessage(rpcError).toLowerCase().includes('could not find the function')
     ) {
       console.error('[MarketCloud] cancelListing RPC:', rpcErrorMessage(rpcError));
-      return false;
+      return { ok: false, error: 'rpc_error', message: rpcErrorMessage(rpcError) };
     }
 
     const { data, error } = await marketListingsTable(client)
@@ -295,9 +310,12 @@ export const MarketCloud: MarketCloudApi = {
 
     if (error) {
       console.error('[MarketCloud] cancelListing:', error.message);
-      return false;
+      return { ok: false, error: 'rpc_error', message: error.message };
     }
-    return !!data;
+    if (!data) {
+      return { ok: false, error: 'listing_not_available' };
+    }
+    return { ok: true, cancelled: true };
   },
 
   async completePurchase(

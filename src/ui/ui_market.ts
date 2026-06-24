@@ -29,6 +29,7 @@ let marketFiltroGrade = 'all';
 let marketFiltroSubtipo = 'all';
 let marketProcessando = false;
 let marketInicializado = false;
+let marketCloudLoadFailed = false;
 /** IDs cancelados nesta sessão — evita fantasma até o refresh da nuvem. */
 const marketHiddenListingIds = new Set<string>();
 
@@ -89,7 +90,16 @@ function refreshMarketUiI18n(): void {
 async function refreshMarketFromCloud(): Promise<void> {
     if (typeof window.MarketCloud === 'undefined' || !window.MarketCloud.isAvailable()) return;
     try {
-        const fetched = await window.MarketCloud.fetchListings();
+        const meta = typeof window.MarketCloud.fetchListingsWithMeta === 'function'
+            ? await window.MarketCloud.fetchListingsWithMeta()
+            : { listings: await window.MarketCloud.fetchListings(), error: undefined as string | undefined };
+        if (meta.error && meta.listings.length === 0) {
+            marketCloudLoadFailed = true;
+            window.mostrarAviso(marketT('market.loadFailed'));
+            return;
+        }
+        marketCloudLoadFailed = false;
+        const fetched = meta.listings;
         const fetchedIds = new Set(fetched.map((entry) => String(entry.id)));
         marketHiddenListingIds.forEach((hid) => {
             if (!fetchedIds.has(hid)) marketHiddenListingIds.delete(hid);
@@ -99,6 +109,33 @@ async function refreshMarketFromCloud(): Promise<void> {
         else if (marketAbaAtual === 'sell') renderizarMeusLeiloes();
     } catch (e) {
         console.error('[Market] refresh cloud:', e);
+        window.mostrarAviso(marketT('market.loadFailed'));
+    }
+}
+
+function marketSetActionButtonBusy(busy: boolean): void {
+    const btn = document.getElementById('btn-acao-item') as HTMLButtonElement | null;
+    if (!btn) return;
+    btn.disabled = busy;
+    if (busy) {
+        if (!btn.dataset.l2MarketPrevLabel) btn.dataset.l2MarketPrevLabel = btn.innerText;
+        btn.innerText = marketT('market.processing');
+    } else if (btn.dataset.l2MarketPrevLabel) {
+        btn.innerText = btn.dataset.l2MarketPrevLabel;
+        delete btn.dataset.l2MarketPrevLabel;
+    }
+}
+
+function marketSetRegisterButtonBusy(busy: boolean): void {
+    const btn = document.querySelector('#janela-market-registrar .btn-store-action') as HTMLButtonElement | null;
+    if (!btn) return;
+    btn.disabled = busy;
+    if (busy) {
+        if (!btn.dataset.l2MarketPrevLabel) btn.dataset.l2MarketPrevLabel = btn.innerText;
+        btn.innerText = marketT('market.processing');
+    } else if (btn.dataset.l2MarketPrevLabel) {
+        btn.innerText = btn.dataset.l2MarketPrevLabel;
+        delete btn.dataset.l2MarketPrevLabel;
     }
 }
 
@@ -117,6 +154,10 @@ function mensagemErroMercadoNuvem(result: MarketOperationResult | null | undefin
     if (code === 'listing_not_available') return marketT('market.errListingGone');
     if (code === 'cannot_buy_own_listing') return marketT('market.errBuyOwn');
     if (code === 'buyer_not_found_or_not_owned') return marketT('market.errBuyerSession');
+    if (code === 'not_authenticated') return marketT('market.errCancelAuth');
+    if (code === 'seller_not_owner') return marketT('market.errCancelSeller');
+    if (code === 'invalid_params') return marketT('market.errCloudGeneric');
+    if (code === 'cancel_failed') return marketT('market.cancelFailed');
     if (code === 'rpc_error' && result.message) return marketT('market.errRpcMsg', { message: result.message });
     if (code === 'rpc_error') return marketT('market.errRpcSql');
     return marketT('market.errCloudGeneric');
@@ -514,6 +555,7 @@ function executarCompraMarket(id: string | number): void {
     }
 
     marketProcessando = true;
+    marketSetActionButtonBusy(true);
 
     (async () => {
         try {
@@ -577,6 +619,7 @@ function executarCompraMarket(id: string | number): void {
             if (typeof window.salvarJogo === 'function') window.salvarJogo();
         } finally {
             marketProcessando = false;
+            marketSetActionButtonBusy(false);
         }
     })();
 }
@@ -635,14 +678,15 @@ function cancelarLeilao(id: string | number): void {
     if (entry.vendedor !== window.charName) return;
 
     marketProcessando = true;
+    marketSetActionButtonBusy(true);
 
     (async () => {
         try {
             if (typeof window.MarketCloud !== 'undefined' && window.MarketCloud.isAvailable()) {
-                const ok = await window.MarketCloud.cancelListing(String(id), window.charName || '');
-                if (!ok) {
+                const cancel = await window.MarketCloud.cancelListing(String(id), window.charName || '');
+                if (cancel.ok !== true) {
                     await refreshMarketFromCloud();
-                    window.mostrarAviso(marketT('market.cancelFailed'));
+                    window.mostrarAviso(mensagemErroMercadoNuvem(cancel));
                     return;
                 }
                 marketHideListingId(id);
@@ -672,6 +716,7 @@ function cancelarLeilao(id: string | number): void {
             if (typeof window.salvarJogo === 'function') window.salvarJogo();
         } finally {
             marketProcessando = false;
+            marketSetActionButtonBusy(false);
         }
     })();
 }
@@ -925,6 +970,7 @@ function confirmarRegistroMarket(): void {
     if (isNaN(qtd) || qtd <= 0) return window.mostrarAviso(marketT('market.invalidQty'));
 
     marketProcessando = true;
+    marketSetRegisterButtonBusy(true);
 
     let fullItemParaVenda: EquipInstance | null = null;
     if (itemSelecionadoParaVenda.categoria === 'equips') {
@@ -932,6 +978,7 @@ function confirmarRegistroMarket(): void {
         fullItemParaVenda = window.inventarioEquips[refIdx] ?? null;
         if (fullItemParaVenda !== itemSelecionadoParaVenda.item) {
             marketProcessando = false;
+            marketSetRegisterButtonBusy(false);
             return window.mostrarAviso(marketT('market.inventorySyncError'));
         }
         window.inventarioEquips.splice(refIdx, 1);
@@ -939,6 +986,7 @@ function confirmarRegistroMarket(): void {
         const nomeMat = String((itemSelecionadoParaVenda.item as Record<string, unknown>).nome || '');
         if ((window.inventario[nomeMat] || 0) < qtd) {
             marketProcessando = false;
+            marketSetRegisterButtonBusy(false);
             return window.mostrarAviso(marketT('market.notEnoughQty'));
         }
         window.inventario[nomeMat] -= qtd;
@@ -1029,6 +1077,7 @@ function confirmarRegistroMarket(): void {
             if (typeof window.salvarJogo === 'function') window.salvarJogo();
         } finally {
             marketProcessando = false;
+            marketSetRegisterButtonBusy(false);
         }
     })();
 }

@@ -219,6 +219,8 @@ declare global {
 
     // --- Funções expostas no window ---
     t: (key: string, params?: Record<string, string | number>) => string;
+    cloudRpcMessage: (code: unknown, options?: { prefix?: string; fallbackKey?: string }) => string;
+    slugRpcErrorCode: (raw: string) => string;
     calcularStatusGlobais: () => void;
     calcularStatusGlobaisFromData: (
       saveLike: Partial<CharacterSave>,

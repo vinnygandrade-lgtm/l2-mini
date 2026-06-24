@@ -174,7 +174,13 @@
                 error_rpc_error: 'Server rejected the request. Try again or check your connection.',
                 error_exception: 'Unexpected error talking to the server.',
                 error_offline: 'Cloud is offline; you cannot register this duel against a real player.',
-                error_invalid_response: 'Invalid server response when registering the duel.'
+                error_invalid_response: 'Invalid server response when registering the duel.',
+                rewardClaimProcessing: 'Processing rank reward…',
+                rewardClaimSuccess: 'Reward for {rank} sent to your Mailbox!',
+                rewardClaimFailed: 'Could not claim this reward.',
+                rewardClaimConnectionFailed: 'Connection error. Try again.',
+                error_not_character_owner: 'This character does not belong to your account.',
+                error_reward_already_claimed: 'You already claimed this rank reward.'
             },
             character: {
                 nameTooShort: 'Character name must be at least 3 characters.',
@@ -277,6 +283,8 @@
                 avisoRewardsCollected: 'Rewards collected!',
                 avisoGoldReceived: 'Gold received!',
                 avisoBulkSettlement: 'Every settlement note was honored. Your wealth is tallied, adventurer.',
+                bulkCollectNone: 'No payments could be collected. Try again or open each mail.',
+                bulkCollectPartial: 'Collected {ok} of {total} payments. Check remaining mail.',
                 currencyAncient: 'Ancient Coin',
                 currencyAdena: 'Adena',
                 parcelTitle: 'IRON GATE — SEALED PARCEL',
@@ -747,10 +755,23 @@
                 },
                 cloud: {
                     syncConnected: 'Cloud sync connected.',
+                    syncing: 'Syncing with cloud…',
+                    error: 'Cloud operation failed.',
+                    error_unknown: 'Something went wrong. Try again.',
+                    connectionFailed: 'Connection error. Try again.',
                     kickedByGm: 'You have been kicked by a GM.',
+                    kickedElsewhere: 'Your account was signed in on another device.',
                     chatSendFailed: 'Could not send your message to other players. Check your connection.',
                     clanChatSendFailed: 'Could not send clan chat. Sync your character to the cloud and ensure playerClanId is saved (same clan id for all members).',
-                    shopStackableFailed: 'Grocer purchase failed. Check your connection or try saving your character again.'
+                    shopStackableFailed: 'Grocer purchase failed. Check your connection or try saving your character again.',
+                    error_mail_not_found: 'Mail not found.',
+                    error_already_claimed: 'This mail was already claimed.',
+                    error_not_recipient: 'This mail is not for your character.',
+                    error_character_not_found: 'Character not found in cloud.',
+                    error_not_authenticated: 'You must be signed in.',
+                    error_rpc_error: 'Server rejected the request. Try again.',
+                    error_not_character_owner: 'This character does not belong to your account.',
+                    error_reward_already_claimed: 'You already claimed this rank reward.'
                 },
                 mp: {
                     viewingPlayer: 'Viewing details of {name}...'
@@ -1426,6 +1447,10 @@
                 errBuyerSession: 'Character not linked to this session. Please sign in again.',
                 errRpcMsg: 'Market (cloud): {message}',
                 errRpcSql: 'Could not reach the server. Run supabase_market_authority.sql on Supabase and try again.',
+                processing: 'Processing…',
+                loadFailed: 'Could not load marketplace listings. Check your connection and try again.',
+                errCancelSeller: 'This listing is not yours.',
+                errCancelAuth: 'Sign in again to cancel listings.',
                 payoutMailbox: 'The Iron Gate has sent your auction proceeds to the Mailbox. Collect your dues there, adventurer.',
                 payoutLog: 'A courier sealed your earnings from {name} — open the Mailbox to collect.',
                 tradeLogBroker: 'Your broker in Aden has dispatched a parcel to your Mailbox.',
@@ -1608,7 +1633,13 @@
                 error_rpc_error: 'O servidor recusou o pedido. Tente de novo ou verifique a conexão.',
                 error_exception: 'Erro inesperado ao falar com o servidor.',
                 error_offline: 'Sem nuvem; não dá para registar duelo contra jogador real.',
-                error_invalid_response: 'Resposta inválida do servidor ao registar o duelo.'
+                error_invalid_response: 'Resposta inválida do servidor ao registar o duelo.',
+                rewardClaimProcessing: 'Processando recompensa de patente…',
+                rewardClaimSuccess: 'Recompensa de {rank} enviada ao correio!',
+                rewardClaimFailed: 'Não foi possível resgatar esta recompensa.',
+                rewardClaimConnectionFailed: 'Erro de conexão. Tente de novo.',
+                error_not_character_owner: 'Este personagem não pertence à sua conta.',
+                error_reward_already_claimed: 'Você já resgatou esta recompensa de patente.'
             },
             character: {
                 nameTooShort: 'O nome deve ter pelo menos 3 caracteres.',
@@ -1711,6 +1742,8 @@
                 avisoRewardsCollected: 'Recompensas coletadas!',
                 avisoGoldReceived: 'Ouro recebido!',
                 avisoBulkSettlement: 'Todos os comprovantes foram honrados. Sua riqueza foi contabilizada, aventureiro.',
+                bulkCollectNone: 'Nenhum pagamento pôde ser coletado. Tente de novo ou abra cada correio.',
+                bulkCollectPartial: 'Coletados {ok} de {total} pagamentos. Confira o correio restante.',
                 currencyAncient: 'Moeda Ancestral',
                 currencyAdena: 'Adena',
                 parcelTitle: 'IRON GATE — ENCOMENDA FECHADA',
@@ -2181,10 +2214,23 @@
                 },
                 cloud: {
                     syncConnected: 'Sincronização com a nuvem conectada.',
+                    syncing: 'Sincronizando com a nuvem…',
+                    error: 'Falha na operação na nuvem.',
+                    error_unknown: 'Algo deu errado. Tente de novo.',
+                    connectionFailed: 'Erro de conexão. Tente de novo.',
                     kickedByGm: 'Você foi expulso por um GM.',
+                    kickedElsewhere: 'Sua conta foi conectada em outro dispositivo.',
                     chatSendFailed: 'Não foi possível enviar a mensagem a outros jogadores. Verifique a conexão.',
                     clanChatSendFailed: 'Não foi possível enviar no chat do clã. Sincronize o personagem na nuvem e confira se o clã está salvo (mesmo playerClanId para todos os membros).',
-                    shopStackableFailed: 'Falha na compra no Grocer. Verifique a conexão ou salve o personagem de novo.'
+                    shopStackableFailed: 'Falha na compra no Grocer. Verifique a conexão ou salve o personagem de novo.',
+                    error_mail_not_found: 'Correio não encontrado.',
+                    error_already_claimed: 'Este correio já foi resgatado.',
+                    error_not_recipient: 'Este correio não é do seu personagem.',
+                    error_character_not_found: 'Personagem não encontrado na nuvem.',
+                    error_not_authenticated: 'É preciso estar logado.',
+                    error_rpc_error: 'O servidor recusou o pedido. Tente de novo.',
+                    error_not_character_owner: 'Este personagem não pertence à sua conta.',
+                    error_reward_already_claimed: 'Você já resgatou esta recompensa de patente.'
                 },
                 mp: {
                     viewingPlayer: 'Vendo detalhes de {name}...'
@@ -2859,6 +2905,10 @@
                 errBuyerSession: 'Personagem não vinculado a esta sessão. Entre novamente.',
                 errRpcMsg: 'Mercado (nuvem): {message}',
                 errRpcSql: 'Não foi possível contactar o servidor. Execute supabase_market_authority.sql no Supabase e tente de novo.',
+                processing: 'Processando…',
+                loadFailed: 'Não foi possível carregar o mercado. Verifique a conexão e tente de novo.',
+                errCancelSeller: 'Este leilão não é seu.',
+                errCancelAuth: 'Entre de novo para cancelar leilões.',
                 payoutMailbox: 'O Iron Gate enviou seus ganhos de leilão para o Correio. Resgate lá, aventureiro.',
                 payoutLog: 'Um mensageiro selou seus ganhos de {name} — abra o Correio para coletar.',
                 tradeLogBroker: 'Seu corretor em Aden enviou uma encomenda para o Correio.',

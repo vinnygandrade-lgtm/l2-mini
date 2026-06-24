@@ -1746,6 +1746,7 @@ export type MarketOperationResult =
       balances: { adenas: number; ancientCoins: number };
     }
   | { ok: true; payouts: unknown[] }
+  | { ok: true; cancelled?: true }
   | { ok: false; error: string; message?: string; details?: MarketRpcPayload };
 
 export interface MarketCloudApi {
@@ -1755,8 +1756,9 @@ export interface MarketCloudApi {
   isListingActiveRow(row: MarketListingRow | null | undefined): boolean;
   mapRowToEntry(row: MarketListingRow | null | undefined): MarketListingEntry | null;
   fetchListings(): Promise<MarketListingEntry[]>;
+  fetchListingsWithMeta(): Promise<{ listings: MarketListingEntry[]; error?: string }>;
   publishListing(payload: MarketPublishPayload): Promise<MarketOperationResult>;
-  cancelListing(listingId: string, sellerCharName: string): Promise<boolean>;
+  cancelListing(listingId: string, sellerCharName: string): Promise<MarketOperationResult>;
   completePurchase(listingId: string, buyerCharName: string): Promise<MarketOperationResult>;
   claimPendingPayouts(sellerCharName: string): Promise<MarketOperationResult>;
   subscribeListings(onRefresh: () => void): void;

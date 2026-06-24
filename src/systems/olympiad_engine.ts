@@ -73,6 +73,7 @@ const OlympiadEngine = {
     abaAtiva: 'battle',
     olyBasicAttackLockUntil: 0,
     rewardsClaimed: [], // Lista de IDs de patentes já resgatadas
+    _claimingReward: false,
     /** UUID de linha `olympiad_matches` (nuvem); obrigatório para persistir MMR em PvP real */
     olyMatchId: null,
     /** Debuffs do rival no jogador (Hamstring, etc.) — multiplicador de P.Atk do atacante */
@@ -165,10 +166,21 @@ const OlympiadEngine = {
         if (!c) return '';
         const safe = c.replace(/[^a-z0-9_]/gi, '');
         if (!safe) return '';
-        const k = 'game.olympiad.error_' + safe;
         if (typeof window.t !== 'function') return '';
-        const msg = window.t(k);
-        return msg !== k ? msg : '';
+        const keys = [`game.olympiad.error_${safe}`, `olympiad.error_${safe}`];
+        for (let i = 0; i < keys.length; i++) {
+            const k = keys[i]!;
+            const msg = window.t(k);
+            if (msg !== k) return msg;
+        }
+        if (typeof window.cloudRpcMessage === 'function') {
+            return window.cloudRpcMessage(c, { prefix: 'olympiad', fallbackKey: 'olympiad.rewardClaimFailed' });
+        }
+        return '';
+    },
+
+    olyT(key, params) {
+        return typeof window.t === 'function' ? window.t(key, params) : key;
     },
 
     olyPruneRivalEffects(agora) {
@@ -404,14 +416,16 @@ const OlympiadEngine = {
 
     async recolherPremio(rankId) {
         if (this.rewardsClaimed.includes(rankId)) return;
+        if (this._claimingReward) return;
         
         const reward = this.rankRewards[rankId];
         if (!reward) return;
 
         // --- SEGURANÇA: MODO MULTIPLAYER (SUPABASE) ---
         if (window.SupabaseAPI && window.SUPABASE_CONFIG?.enabled && window.SupabaseAPI.getUser()) {
+            this._claimingReward = true;
             try {
-                if (window.mostrarAviso) window.mostrarAviso("Processing reward...");
+                if (window.mostrarAviso) window.mostrarAviso(this.olyT('olympiad.rewardClaimProcessing'));
                 
                 const result = await window.SupabaseAPI.client.rpc('claim_olympiad_reward', {
                     p_char_name: window.charName,
@@ -421,21 +435,25 @@ const OlympiadEngine = {
                 }) as { data: OlympiadClaimRpcResult | null; error: unknown };
 
                 if (result && result.data && result.data.success) {
-                    // Sincroniza lista local com a do servidor
                     this.rewardsClaimed = result.data.claimed_list || [];
                     this.salvarRecompensasResgatadas();
                     
-                    if (window.mostrarAviso) window.mostrarAviso(`Reward for ${rankId} sent to Mailbox!`);
+                    if (window.mostrarAviso) {
+                        window.mostrarAviso(this.olyT('olympiad.rewardClaimSuccess', { rank: rankId }));
+                    }
                     
-                    // Recarrega mailbox para mostrar o novo item
                     if (typeof window.carregarMailbox === 'function') void window.carregarMailbox();
                 } else {
-                    const msg = (result && result.data) ? result.data.message : "Error claiming reward";
-                    if (window.mostrarAviso) window.mostrarAviso(`❌ ${msg}`);
+                    const rawMsg = (result && result.data) ? result.data.message : '';
+                    const mapped = rawMsg ? this.olyMatchRpcMessage(rawMsg) : '';
+                    const fallback = this.olyT('olympiad.rewardClaimFailed');
+                    if (window.mostrarAviso) window.mostrarAviso(mapped || fallback);
                 }
             } catch (err) {
                 console.error("❌ [Olympiad] Erro ao resgatar via RPC:", err);
-                if (window.mostrarAviso) window.mostrarAviso("❌ Connection error. Try again.");
+                if (window.mostrarAviso) window.mostrarAviso(this.olyT('olympiad.rewardClaimConnectionFailed'));
+            } finally {
+                this._claimingReward = false;
             }
             
             this.abrirModalRecompensas();

@@ -446,7 +446,11 @@ const SupabaseAPI = {
                 if (isTarget) {
                     if (action === 'kick' || action === 'kick_other_sessions') {
                         if (data?.sessionId === this.tabSessionId) return;
-                        window.l2Alert(action === 'kick_other_sessions' ? "Sua conta foi conectada em outro local." : "You have been kicked by a GM.");
+                        window.l2Alert(
+                            action === 'kick_other_sessions'
+                                ? (typeof window.t === 'function' ? window.t('game.cloud.kickedElsewhere') : 'Your account was signed in on another device.')
+                                : (typeof window.t === 'function' ? window.t('game.cloud.kickedByGm') : 'You have been kicked by a GM.')
+                        );
                         if (this.client) await this.client.auth.signOut();
                         setTimeout(() => location.reload(), 3000);
                     } else if (action === 'force_update') {
@@ -1047,16 +1051,23 @@ const SupabaseAPI = {
      */
     async claimMailReward(mailId) {
         const mid = mailId != null ? String(mailId).trim() : '';
-        if (!SUPABASE_CONFIG.enabled || !mid) return { success: false };
+        if (!SUPABASE_CONFIG.enabled || !mid) return { success: false, error: 'invalid_params' };
         if (!this.client) await this.init();
         try {
             const { data, error } = await this.client.rpc('claim_mail_reward', { p_mail_id: mid });
             if (error) throw error;
-            if (data && typeof data === 'object' && 'success' in data) return data;
+            if (data && typeof data === 'object' && 'success' in data) {
+                const row = data as { success?: boolean; error?: string };
+                if (row.success === false && row.error) {
+                    return { success: false, error: row.error };
+                }
+                return data;
+            }
             return { success: true };
         } catch (e) {
             console.error('[claimMailReward RPC Error]', e);
-            return { success: false, error: e };
+            const msg = e && typeof e === 'object' && 'message' in e ? String((e as { message: unknown }).message) : String(e);
+            return { success: false, error: msg || 'rpc_error' };
         }
     },
 

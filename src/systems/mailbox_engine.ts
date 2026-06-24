@@ -16,6 +16,14 @@ import { registerGlobal } from '../runtime/register-global';
 
 let mailboxAbaAtual: 'inbox' | 'history' = 'inbox';
 let mailboxDados: MailboxData = { inbox: [], history: [] };
+let mailboxCollecting = false;
+
+function mailboxCloudErrorMessage(err: unknown): string {
+    if (typeof window.cloudRpcMessage === 'function') {
+        return window.cloudRpcMessage(err, { prefix: 'game.cloud' });
+    }
+    return mb('game.cloud.error');
+}
 
 function mb(key: string, params?: Record<string, string | number>): string {
     return typeof window.t === 'function' ? window.t(key, params) : key;
@@ -771,12 +779,12 @@ async function processarAcaoMail(msgId, acao, param = null) {
                     if (typeof window.salvarJogo === 'function') window.salvarJogo();
                     return;
                 } else {
-                    const errMsg = result ? result.error : 'unknown_error';
-                    window.mostrarAviso(mb('game.cloud.error') + ': ' + errMsg);
+                    window.mostrarAviso(mailboxCloudErrorMessage(result ? result.error : 'unknown_error'));
                     return;
                 }
         } catch (e) {
             console.error("[Mailbox RPC Exception]", e);
+            window.mostrarAviso(mailboxCloudErrorMessage(e));
             return;
         }
     }
@@ -853,6 +861,7 @@ async function processarAcaoMail(msgId, acao, param = null) {
  * Coleta todos os ganhos de mercado de uma vez
  */
 async function coletarTudoMarket() {
+    if (mailboxCollecting) return;
     const marketMsgs = mailboxDados.inbox.filter(m => {
         if (m.tipo !== 'market') return false;
         const d = m.detalhes || {};
@@ -863,30 +872,43 @@ async function coletarTudoMarket() {
 
     // MODO MULTIPLAYER (SUPABASE)
     if (window.SupabaseAPI && window.SupabaseAPI.getUser()) {
+        mailboxCollecting = true;
         window.mostrarAviso(mb('game.cloud.syncing'));
         let tA = 0;
         let tC = 0;
-        for (const msg of marketMsgs) {
-            const res = await window.SupabaseAPI.claimMailReward(String(msg.id));
-            if (res && res.success) {
-                tA += Number(res.reward_adena) || 0;
-                tC += Number(res.reward_ancient) || 0;
+        let okCount = 0;
+        try {
+            for (const msg of marketMsgs) {
+                const res = await window.SupabaseAPI.claimMailReward(String(msg.id));
+                if (res && res.success) {
+                    tA += Number(res.reward_adena) || 0;
+                    tC += Number(res.reward_ancient) || 0;
+                    okCount++;
+                }
             }
-        }
-        if (tA > 0) window.adenas = (Number(window.adenas) || 0) + tA;
-        if (tC > 0) window.ancientCoins = (Number(window.ancientCoins) || 0) + tC;
-        if (tA > 0 || tC > 0) {
-            if (typeof window.syncMoedasInventarioComCarteira === 'function') {
-                window.syncMoedasInventarioComCarteira();
+            if (tA > 0) window.adenas = (Number(window.adenas) || 0) + tA;
+            if (tC > 0) window.ancientCoins = (Number(window.ancientCoins) || 0) + tC;
+            if (tA > 0 || tC > 0) {
+                if (typeof window.syncMoedasInventarioComCarteira === 'function') {
+                    window.syncMoedasInventarioComCarteira();
+                }
+                window.atualizar?.();
             }
+            await carregarMailbox();
+            renderizarMailbox();
+            await atualizarIconeMailbox();
             window.atualizar?.();
+            if (typeof window.salvarJogo === 'function') window.salvarJogo();
+            if (okCount === 0) {
+                window.mostrarAviso(mb('mailbox.bulkCollectNone'));
+            } else if (okCount < marketMsgs.length) {
+                window.mostrarAviso(mb('mailbox.bulkCollectPartial', { ok: okCount, total: marketMsgs.length }));
+            } else {
+                window.mostrarAviso(mb('mailbox.avisoBulkSettlement'));
+            }
+        } finally {
+            mailboxCollecting = false;
         }
-        await carregarMailbox();
-        renderizarMailbox();
-        await atualizarIconeMailbox();
-        window.atualizar?.();
-        if (typeof window.salvarJogo === 'function') window.salvarJogo();
-        window.mostrarAviso(mb('mailbox.avisoBulkSettlement'));
         return;
     }
 
