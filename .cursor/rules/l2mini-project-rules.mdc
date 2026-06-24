@@ -401,7 +401,7 @@ Usar **SQL Editor** do projeto Supabase; o remoto não segue o Git automaticamen
 | `tests/smoke/` | Playwright E2E (sem login nuvem — inject save mínimo) |
 | `package.json` scripts | Ver §14.2 |
 
-**Legado morto (remover quando confirmado):** `src/legacy/ordered-scripts.ts`, `src/legacy/load-scripts.ts` — eram ponte da migração; **não** usar para boot novo.
+**Boot:** só **`src/main.ts`** — não existe loader legado em `src/legacy/`.
 
 ### 14.2 Comandos — rotina antes de merge
 
@@ -417,7 +417,7 @@ npm run test:ci              # typecheck + build + smoke — alvo de CI
 
 **Sequência mínima (qualquer PR):** `typecheck` → `build`. **Com strings i18n:** acrescentar `node --check src/i18n/locales_bundle.ts`. **Com risco de regressão UX/core:** `npm run test:smoke` ou checklist manual em **`docs/typescript-migration-phase0.md`**.
 
-**Script unificado alvo (opcional no `package.json`):** `validate` = typecheck + `node --check` bundle + build — ver **`docs/new-feature-checklist.md`**.
+**Script unificado:** `npm run validate` = typecheck + `npm run check:i18n` + build — ver **`docs/new-feature-checklist.md`**. CI: **`npm run test:ci`** (`.github/workflows/ci.yml`).
 
 ### 14.3 Ordem de boot (`src/main.ts`)
 

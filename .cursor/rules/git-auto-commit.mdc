@@ -1,0 +1,38 @@
+---
+description: Git — commit e push automáticos após avanço considerável (pedido do utilizador)
+alwaysApply: true
+---
+
+# Git — commit automático após avanço considerável
+
+## Pedido do utilizador
+Quando houver **avanço considerável** numa sessão, o Agente **deve** fazer Git por conta própria (sem esperar pedido explícito de "commita"):
+
+1. `git status` (verificar o que mudou)
+2. `git add` dos ficheiros relevantes (ou `git add -A` se o bloco de trabalho for coerente)
+3. `git commit` com mensagem clara em inglês (estilo do repo), focada no **porquê**
+4. `git push` para `origin` (se o remoto existir e o push for possível)
+
+Usar `C:\Program Files\Git\bin\git.exe` se `git` não estiver no PATH do terminal.
+
+## O que conta como "avanço considerável"
+Fazer commit+push **no fim** do bloco quando **qualquer** destes for verdade:
+
+- Feature ou fix **funcional** terminado e validado (build/typecheck OK quando aplicável)
+- Migração ou refactor **fechado** (não a meio)
+- Conjunto coerente de alterações (ex.: nova RPC + cliente + i18n en+pt-BR)
+- Atualização grande de docs/GDD alinhada a código
+- Sessão com **vários ficheiros** num mesmo objetivo claro
+
+## Quando NÃO commitar automaticamente
+- Exploração, perguntas só leitura, ou trabalho **a meio** (testes a falhar, WIP)
+- Alterações **só locais/de debug** que o utilizador não pediu para guardar
+- Ficheiros com segredos (`.env`, credenciais) — nunca `git add`
+- Push falha (auth/rede): fazer **commit local**, informar o utilizador e tentar push quando pedirem
+
+## Mensagens de commit
+- 1–2 frases, imperativo, **porquê** > lista de ficheiros
+- Ex.: `Add market listing cancel RPC and wire client bridge`
+
+## Após commit
+Informar brevemente: hash curto, quantos ficheiros, se push OK, link do repo se relevante.

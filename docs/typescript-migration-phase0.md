@@ -160,7 +160,7 @@ Publicar o conteúdo de **`dist/`** (não a raiz do repo).
 | `src/systems/castle_engine.ts` … `ranking_seasons.ts` | Castelo, guerra, mercado cloud, GM, rewards, mailbox, sync, presença, ranking |
 | `vite.config.ts` | Dev server + copy de `css/`, `assets/`, `index.html` → `dist/` |
 
-**Migração concluída (Fases 3–4):** todo o runtime do jogo está em `src/**/*.ts`; catálogos em `src/db/`, i18n em `src/i18n/`. Legado `src/legacy/*` — remover quando confirmado (GDD **§14.1**).
+**Migração concluída (Fases 3–4):** todo o runtime do jogo está em `src/**/*.ts`; catálogos em `src/db/`, i18n em `src/i18n/`. Loader `src/legacy/*` removido — boot só via `src/main.ts`.
 
 ### Testes
 

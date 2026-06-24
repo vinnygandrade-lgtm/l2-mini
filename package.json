@@ -11,6 +11,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
+    "check:i18n": "node --check src/i18n/locales_bundle.ts",
+    "validate": "npm run typecheck && npm run check:i18n && npm run build",
     "test:smoke": "playwright test",
     "test:smoke:ui": "playwright test --ui",
     "test:smoke:headed": "playwright test --headed",

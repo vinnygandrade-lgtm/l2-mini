@@ -84,9 +84,9 @@ Use esta lista **antes de abrir PR** ou quando pedires ao agente uma feature nov
 ## 8. Verificação antes de merge
 
 ```bash
-npm run typecheck
-node --check src/i18n/locales_bundle.ts
-npm run test:smoke    # quando aplicável
+npm run validate          # typecheck + i18n bundle + build
+npm run test:smoke        # opcional — regressão E2E local
+npm run test:ci           # CI completo (validate implícito + smoke)
 ```
 
 - [ ] Teste manual mínimo da feature (happy path + falha de rede se online).
