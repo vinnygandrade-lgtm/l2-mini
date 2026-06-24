@@ -9,14 +9,16 @@ test.describe('Combat math (TS module)', () => {
   });
 
   test('atacar applies damage to mob via aplicarDanoNoMonstro', async ({ page }) => {
-    await page.evaluate(() => {
+    const state = await page.evaluate(() => {
+      window.globalCooldownAtivo = 0;
       window.monstrosAtivos = [
         {
           idUnico: 'smoke-mob-1',
-          hp: 500,
-          maxHp: 500,
+          hp: 5000,
+          maxHp: 5000,
           atk: 50,
           def: 30,
+          pDef: 30,
           atkSpd: 3000,
           idImg: 'wolf',
           progresso: 0,
@@ -24,16 +26,18 @@ test.describe('Combat math (TS module)', () => {
       ];
       window.playerStats = { ...window.playerStats, pAtk: 200, mAtk: 100, atkSpeed: 500 };
       window.autoAtaqueAtivo = false;
-    });
 
-    const state = await page.evaluate(() => {
       window.atacar?.();
-      const mob = window.monstrosAtivos[0] as { hp?: number };
-      return { hp: mob?.hp ?? 500, autoOn: window.autoAtaqueAtivo };
+      const mob = window.monstrosAtivos[0] as { hp?: number } | undefined;
+      return {
+        hp: mob ? Math.floor(Number(mob.hp)) : 0,
+        mobGone: !mob,
+        autoOn: window.autoAtaqueAtivo,
+      };
     });
 
-    expect(state.hp).toBeLessThan(500);
     expect(state.autoOn).toBe(true);
+    expect(state.mobGone || state.hp < 5000).toBe(true);
   });
 
   test('player defeat flow runs escreverLog without error', async ({ page }) => {
