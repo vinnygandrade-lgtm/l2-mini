@@ -798,7 +798,8 @@
                     selectMemberTitle: 'Select member for Rank {n}',
                     ghostClanName: 'Ghost Legion',
                     ghostClanTag: 'GHOST',
-                    ghostKing: 'Ghost King'
+                    ghostKing: 'Ghost King',
+                    vsDefault: 'TOTAL WAR'
                 },
                 dailyBoss: {
                     modalTitle: 'DAILY BOSS',
@@ -1362,6 +1363,47 @@
                     cardAscensionDesc: 'After S-Grade: weekly elite hunt, seasons, renown.',
                     loadingCard: 'Loading…'
                 },
+                zones: {
+                    modalTitle: 'Zone details',
+                    suggestedLevelLabel: 'Suggested Level',
+                    teleportCostLabel: 'Teleport Cost',
+                    costFree: 'FREE',
+                    costAdena: '{amount} Adena',
+                    levelRange: 'Lv. {range}',
+                    inhabitantsTitle: 'Common Inhabitants',
+                    rewardsTitle: 'Notable Rewards',
+                    teleportBtn: 'TELEPORT NOW',
+                    ng: {
+                        name: 'Talking Island',
+                        desc: 'The starting point for every adventurer. A peaceful isle—yet corrupted beasts stalk its shores.',
+                        costShort: 'Free'
+                    },
+                    d: {
+                        name: 'Ruins of Despair',
+                        desc: 'Ancient ruins overrun by skeleton hosts and restless dead.',
+                        costShort: '100a'
+                    },
+                    c: {
+                        name: 'Death Pass',
+                        desc: 'A narrow, shadowed gorge—travelers say the wind still carries the cries of the ambushed.',
+                        costShort: '500a'
+                    },
+                    b: {
+                        name: 'Dragon Valley',
+                        desc: 'A scorching volcanic vale—home to lesser drakes and beasts of molten stone.',
+                        costShort: '2k'
+                    },
+                    a: {
+                        name: 'Tower of Insolence',
+                        desc: 'A colossal tower that defies the heavens—each floor deadlier than the last.',
+                        costShort: '10k'
+                    },
+                    s: {
+                        name: 'Imperial Tomb',
+                        desc: 'The final resting hall of long-fallen emperors—only the strongest heroes endure here.',
+                        costShort: '50k'
+                    }
+                },
                 hunt: {
                     searchEnemies: '🔍 SEARCH ENEMIES',
                     searching: 'Searching for tracks...',
@@ -1472,7 +1514,9 @@
                     confirmGiveItem: 'Give {qty}× {item} to {name}?',
                     giveSuccessCurrency: 'Sent {amount} {currency} to {name}.',
                     giveSuccessItem: 'Sent {qty}× {item} to {name}.',
-                    giveFailed: 'Could not deliver reward: {detail}'
+                    giveFailed: 'Could not deliver reward: {detail}',
+                    giftMailCurrency: 'Hello, champion of Aden.\n\nThat little reward we save for people who make the server shine? This is it. ✨\n\nThe GM team prepared {prettyAmount} {coinName} for you. May every coin help in memorable battles, dream crafts, or that “I did it” moment. You’ve earned it.\n\nWith respect and a digital hug,\nGM Team',
+                    giftMailItem: 'Adventurer,\n\nSometimes fate — or a generous GM — puts exactly what you needed in your hands. ⚔️\n\nThe team picked and wrapped this for you: {qty}x {item}. We hope it makes a difference on your next step in Aden.\n\nShine out there, and thanks for playing with us.\nGM Team'
                 },
                 settings: {
                     title: 'SETTINGS',
@@ -2404,7 +2448,8 @@
                     selectMemberTitle: 'Selecionar membro para a patente {n}',
                     ghostClanName: 'Legião Fantasma',
                     ghostClanTag: 'FANT',
-                    ghostKing: 'Rei Fantasma'
+                    ghostKing: 'Rei Fantasma',
+                    vsDefault: 'GUERRA TOTAL'
                 },
                 dailyBoss: {
                     modalTitle: 'BOSS DIÁRIO',
@@ -2968,6 +3013,47 @@
                     cardAscensionDesc: 'Depois do S-Grade: caça elite semanal, temporadas, renome.',
                     loadingCard: 'Carregando…'
                 },
+                zones: {
+                    modalTitle: 'Detalhes da zona',
+                    suggestedLevelLabel: 'Nível sugerido',
+                    teleportCostLabel: 'Custo do teleporte',
+                    costFree: 'GRÁTIS',
+                    costAdena: '{amount} Adena',
+                    levelRange: 'Nv. {range}',
+                    inhabitantsTitle: 'Habitantes comuns',
+                    rewardsTitle: 'Recompensas notáveis',
+                    teleportBtn: 'TELEPORTAR AGORA',
+                    ng: {
+                        name: 'Talking Island',
+                        desc: 'O ponto de partida de todo aventureiro. Uma ilha pacífica — mas feras corrompidas rondam suas praias.',
+                        costShort: 'Grátis'
+                    },
+                    d: {
+                        name: 'Ruins of Despair',
+                        desc: 'Ruínas antigas tomadas por hordas de esqueletos e mortos inquietos.',
+                        costShort: '100a'
+                    },
+                    c: {
+                        name: 'Death Pass',
+                        desc: 'Um desfiladeiro estreito e sombrio — dizem que o vento ainda carrega os gritos dos emboscados.',
+                        costShort: '500a'
+                    },
+                    b: {
+                        name: 'Dragon Valley',
+                        desc: 'Um vale vulcânico escaldante — lar de drakes menores e feras de pedra fundida.',
+                        costShort: '2k'
+                    },
+                    a: {
+                        name: 'Tower of Insolence',
+                        desc: 'Uma torre colossal que desafia os céus — cada andar mais mortal que o anterior.',
+                        costShort: '10k'
+                    },
+                    s: {
+                        name: 'Imperial Tomb',
+                        desc: 'O salão final de imperadores caídos — só os heróis mais fortes resistem aqui.',
+                        costShort: '50k'
+                    }
+                },
                 hunt: {
                     searchEnemies: '🔍 BUSCAR INIMIGOS',
                     searching: 'Procurando rastros...',
@@ -3078,7 +3164,9 @@
                     confirmGiveItem: 'Dar {qty}× {item} para {name}?',
                     giveSuccessCurrency: 'Enviado {amount} {currency} para {name}.',
                     giveSuccessItem: 'Enviado {qty}× {item} para {name}.',
-                    giveFailed: 'Não foi possível entregar: {detail}'
+                    giveFailed: 'Não foi possível entregar: {detail}',
+                    giftMailCurrency: 'Olá, campeão de Aden.\n\nAquela recompensa que guardamos para quem faz o servidor brilhar? É esta. ✨\n\nA equipe GM preparou {prettyAmount} {coinName} para você. Que cada moeda ajude em batalhas memoráveis, crafts dos sonhos ou naquele momento “consegui!”.\n\nCom respeito e um abraço digital,\nEquipe GM',
+                    giftMailItem: 'Aventureiro,\n\nÀs vezes o destino — ou um GM generoso — coloca exatamente o que você precisava nas suas mãos. ⚔️\n\nA equipe escolheu e embalou isto para você: {qty}x {item}. Esperamos que faça diferença no seu próximo passo em Aden.\n\nBrilhe por aí e obrigado por jogar conosco.\nEquipe GM'
                 },
                 settings: {
                     title: 'CONFIGURAÇÕES',

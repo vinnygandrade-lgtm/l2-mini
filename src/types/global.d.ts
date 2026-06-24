@@ -79,6 +79,8 @@ declare global {
     verificarLimitePersonagem?: () => boolean;
     abrirDetalhesZona?: (grade: string) => void;
     teleportarParaZona?: (grade: string) => void;
+    zoneDisplayName?: (grade: string | null | undefined) => string;
+    refreshHuntZoneHud?: () => void;
     recolherLootRaid?: () => void;
     abrirPerfilJogadorRanking?: (nome: string, isBot?: boolean) => void;
     renderizarSocial?: () => void;
@@ -509,6 +511,8 @@ declare global {
   function setMarketRegMaxQtd(): void;
   function filtrarHistorico(tipo: string): void;
   function refreshMarketUiI18n(): void;
+  function refreshHuntZoneHud(): void;
+  function zoneDisplayName(grade: string | null | undefined): string;
   function fecharJanelaAcao(): void;
   function fecharModalRegistrarMercado(): void;
   function fecharSeletorItemMarket(): void;

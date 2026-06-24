@@ -326,14 +326,8 @@ const GMEngine: GmEngineApi = {
                 const { error } = await gmRewardsInsert(window.SupabaseAPI.client!).insert([{
                     char_name: targetName,
                     sender: 'Game Master',
-                    message: `Hello, champion of Aden.
-
-That little reward we save for people who make the server shine? This is it. ✨
-
-The GM team prepared ${prettyAmount} ${coinName} for you. May every coin help in memorable battles, dream crafts, or that “I did it” moment. You’ve earned it.
-
-With respect and a digital hug,
-GM Team`,
+                    message: this.gmT('giftMailCurrency', { prettyAmount, coinName }) ||
+                        `Hello, champion of Aden.\n\nThe GM team prepared ${prettyAmount} ${coinName} for you.\n\nGM Team`,
                     items: [{ id: coinName, qtd: amount, tipo: 'currency' }]
                 }]);
 
@@ -404,14 +398,8 @@ GM Team`,
                 const { error } = await gmRewardsInsert(window.SupabaseAPI.client!).insert([{
                     char_name: targetName,
                     sender: 'Game Master',
-                    message: `Adventurer,
-
-Sometimes fate — or a generous GM — puts exactly what you needed in your hands. ⚔️
-
-The team picked and wrapped this for you: ${qty}x ${itemNomeBonito || itemKey}. We hope it makes a difference on your next step in Aden.
-
-Shine out there, and thanks for playing with us.
-GM Team`,
+                    message: this.gmT('giftMailItem', { qty, item: itemNomeBonito || itemKey }) ||
+                        `Adventurer,\n\nThe team prepared ${qty}x ${itemNomeBonito || itemKey} for you.\n\nGM Team`,
                     items: [{ id: itemKey, qtd: qty, tipo: 'item', nome: itemNomeBonito || undefined }]
                 }]);
 

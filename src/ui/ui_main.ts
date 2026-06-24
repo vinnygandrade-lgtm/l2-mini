@@ -1369,16 +1369,76 @@ window.abrirAcaoItemBot = function abrirAcaoItemBot(tipo: string, index = 0) {
     btnAcao.style.display = 'none'; // Esconde o botão de ação (pois é de outro jogador)
 }
 
+const ZONE_GRADE_I18N: Record<string, string> = {
+    'No-Grade': 'ng',
+    D: 'd',
+    C: 'c',
+    B: 'b',
+    A: 'a',
+    S: 's',
+};
+
+const ZONE_TOWN_GRADE_KEY: Record<string, string> = {
+    'No-Grade': 'game.town.gradeNg',
+    D: 'game.town.gradeD',
+    C: 'game.town.gradeC',
+    B: 'game.town.gradeB',
+    A: 'game.town.gradeA',
+    S: 'game.town.gradeS',
+};
+
+function zoneCatalogText(grade: string, field: 'name' | 'desc'): string {
+    const sfx = ZONE_GRADE_I18N[grade];
+    const catalog = typeof catalogoZonas !== 'undefined' ? catalogoZonas[grade] : null;
+    if (sfx && typeof window.t === 'function') {
+        const key = `game.zones.${sfx}.${field}`;
+        const localized = window.t(key);
+        if (localized && localized !== key) return localized;
+    }
+    if (!catalog) return grade;
+    return field === 'name' ? catalog.nome : catalog.descricao;
+}
+
+function zoneDisplayName(grade: string | null | undefined): string {
+    const g = grade || 'No-Grade';
+    return zoneCatalogText(g, 'name');
+}
+
+function zoneGradeLabel(grade: string): string {
+    const gradeKey = ZONE_TOWN_GRADE_KEY[grade];
+    if (gradeKey && typeof window.t === 'function') {
+        const localized = window.t(gradeKey);
+        if (localized && localized !== gradeKey) return localized;
+    }
+    return grade;
+}
+
+function refreshHuntZoneHud(): void {
+    const el = document.getElementById('hud-zona-nome');
+    if (!el || !window.zonaAtual) return;
+    el.innerText = zoneDisplayName(window.zonaAtual.id);
+}
+
 function abrirDetalhesZona(grade) {
     const dados = catalogoZonas[grade];
     if (!dados) return;
+    const tFn = typeof window.t === 'function' ? window.t : null;
 
-    document.getElementById('zona-detalhe-titulo').innerText = dados.nome;
-    document.getElementById('zona-detalhe-grade').innerText = grade;
+    document.getElementById('zona-detalhe-titulo').innerText = zoneDisplayName(grade);
+    document.getElementById('zona-detalhe-grade').innerText = zoneGradeLabel(grade);
     document.getElementById('zona-detalhe-grade').style.backgroundColor = dados.cor;
-    document.getElementById('zona-detalhe-nivel').innerText = `Lv. ${dados.nivelSugerido}`;
-    document.getElementById('zona-detalhe-custo').innerText = dados.custo === 0 ? "FREE" : `${dados.custo.toLocaleString()} Adena`;
-    document.getElementById('zona-detalhe-descricao').innerText = dados.descricao;
+    document.getElementById('zona-detalhe-nivel').innerText = tFn
+        ? tFn('game.zones.levelRange', { range: dados.nivelSugerido })
+        : `Lv. ${dados.nivelSugerido}`;
+    document.getElementById('zona-detalhe-custo').innerText =
+        dados.custo === 0
+            ? tFn
+                ? tFn('game.zones.costFree')
+                : 'FREE'
+            : tFn
+              ? tFn('game.zones.costAdena', { amount: dados.custo.toLocaleString() })
+              : `${dados.custo.toLocaleString()} Adena`;
+    document.getElementById('zona-detalhe-descricao').innerText = zoneCatalogText(grade, 'desc');
 
     const monstrosCont = document.getElementById('zona-detalhe-monstros');
     monstrosCont.innerHTML = dados.monstros.map(m => `<span class="zone-tag">${m}</span>`).join('');
@@ -1387,26 +1447,30 @@ function abrirDetalhesZona(grade) {
     recompensasCont.innerHTML = dados.recompensas.map(r => `<span class="zone-tag" style="border-color: #ca8a04; color: #facc15;">${r}</span>`).join('');
 
     const btnViajar = document.getElementById('btn-confirmar-viagem');
-    btnViajar.onclick = () => {
-        fecharModal('janela-detalhes-zona');
-        teleportarParaZona(grade);
-    };
+    if (btnViajar) {
+        btnViajar.innerText = tFn ? tFn('game.zones.teleportBtn') : 'TELEPORT NOW';
+        btnViajar.onclick = () => {
+            fecharModal('janela-detalhes-zona');
+            teleportarParaZona(grade);
+        };
+    }
 
     abrirModal('janela-detalhes-zona');
 }
 
 function teleportarParaZona(grade) {
     let zonaDestino = zonasDeCaca[grade];
+    const zoneName = zoneDisplayName(grade);
     if (window.adenas >= zonaDestino.custo) {
         fecharNpc(); 
         if (zonaDestino.custo > 0) { 
             window.adenas -= zonaDestino.custo; 
-            window.escreverLog(`<span style="color:#ffcc00">` + (typeof window.t === 'function' ? window.t('game.travel.paidTravel', { cost: zonaDestino.custo, name: zonaDestino.nome }) : `You paid ${zonaDestino.custo}a and traveled to ${zonaDestino.nome}.`) + `</span>`); 
+            window.escreverLog(`<span style="color:#ffcc00">` + (typeof window.t === 'function' ? window.t('game.travel.paidTravel', { cost: zonaDestino.custo, name: zoneName }) : `You paid ${zonaDestino.custo}a and traveled to ${zoneName}.`) + `</span>`); 
         } else { 
-            window.escreverLog(`<span style="color:#ffcc00">` + (typeof window.t === 'function' ? window.t('game.travel.freeTravel', { name: zonaDestino.nome }) : `You traveled to ${zonaDestino.nome} for free.`) + `</span>`); 
+            window.escreverLog(`<span style="color:#ffcc00">` + (typeof window.t === 'function' ? window.t('game.travel.freeTravel', { name: zoneName }) : `You traveled to ${zoneName} for free.`) + `</span>`); 
         }
         window.zonaAtual = zonaDestino; 
-        document.getElementById('hud-zona-nome').innerText = window.zonaAtual.nome; 
+        document.getElementById('hud-zona-nome').innerText = zoneName; 
         window.monstrosAtivos.length = 0;
         window.atualizar(); 
         irPara('floresta'); 
@@ -1521,6 +1585,8 @@ window.validarLogin = validarLogin;
 window.verificarLimitePersonagem = verificarLimitePersonagem;
 window.abrirDetalhesZona = abrirDetalhesZona;
 window.teleportarParaZona = teleportarParaZona;
+window.zoneDisplayName = zoneDisplayName;
+window.refreshHuntZoneHud = refreshHuntZoneHud;
 window.recolherLootRaid = recolherLootRaid;
 window.abrirPerfilJogadorRanking = abrirPerfilJogadorRanking;
 window.renderizarSocial = renderizarSocial;

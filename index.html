@@ -155,11 +155,11 @@
 
                     <div class="zone-info-grid">
                         <div class="zone-info-item">
-                            <label>Suggested Level</label>
+                            <label data-i18n="game.zones.suggestedLevelLabel">Suggested Level</label>
                             <span id="zona-detalhe-nivel">1 - 20</span>
                         </div>
                         <div class="zone-info-item">
-                            <label>Teleport Cost</label>
+                            <label data-i18n="game.zones.teleportCostLabel">Teleport Cost</label>
                             <span id="zona-detalhe-custo">FREE</span>
                         </div>
                     </div>
@@ -169,14 +169,14 @@
                     </div>
 
                     <div class="zone-lists">
-                        <div class="zone-list-title">Common Inhabitants</div>
+                        <div class="zone-list-title" data-i18n="game.zones.inhabitantsTitle">Common Inhabitants</div>
                         <div id="zona-detalhe-monstros" class="zone-tags">
                             <!-- Injected via JS -->
                         </div>
                     </div>
 
                     <div class="zone-lists">
-                        <div class="zone-list-title">Notable Rewards</div>
+                        <div class="zone-list-title" data-i18n="game.zones.rewardsTitle">Notable Rewards</div>
                         <div id="zona-detalhe-recompensas" class="zone-tags">
                             <!-- Injected via JS -->
                         </div>
@@ -184,7 +184,7 @@
                 </div>
             </div>
             <div class="zone-footer-actions">
-                <button type="button" id="btn-confirmar-viagem" class="btn-l2">TELEPORT NOW</button>
+                <button type="button" id="btn-confirmar-viagem" class="btn-l2" data-i18n="game.zones.teleportBtn">TELEPORT NOW</button>
             </div>
     </div>
 
@@ -1160,12 +1160,12 @@
                     </div>
                     
                     <div class="tp-grid">
-                        <button class="tp-button" onclick="abrirDetalhesZona('No-Grade')">Talking Island <span>Free</span></button>
-                        <button type="button" class="tp-button tp-button--d" onclick="abrirDetalhesZona('D')">Ruins Despair <span>100a</span></button>
-                        <button type="button" class="tp-button tp-button--c" onclick="abrirDetalhesZona('C')">Death Pass <span>500a</span></button>
-                        <button type="button" class="tp-button tp-button--b" onclick="abrirDetalhesZona('B')">Dragon Valley <span>2k</span></button>
-                        <button type="button" class="tp-button tp-button--a" onclick="abrirDetalhesZona('A')">Tower Insolence <span>10k</span></button>
-                        <button type="button" class="tp-button tp-button--s" onclick="abrirDetalhesZona('S')">Imperial Tomb <span>50k</span></button>
+                        <button class="tp-button" onclick="abrirDetalhesZona('No-Grade')"><span data-i18n="game.zones.ng.name">Talking Island</span> <span data-i18n="game.zones.ng.costShort">Free</span></button>
+                        <button type="button" class="tp-button tp-button--d" onclick="abrirDetalhesZona('D')"><span data-i18n="game.zones.d.name">Ruins of Despair</span> <span data-i18n="game.zones.d.costShort">100a</span></button>
+                        <button type="button" class="tp-button tp-button--c" onclick="abrirDetalhesZona('C')"><span data-i18n="game.zones.c.name">Death Pass</span> <span data-i18n="game.zones.c.costShort">500a</span></button>
+                        <button type="button" class="tp-button tp-button--b" onclick="abrirDetalhesZona('B')"><span data-i18n="game.zones.b.name">Dragon Valley</span> <span data-i18n="game.zones.b.costShort">2k</span></button>
+                        <button type="button" class="tp-button tp-button--a" onclick="abrirDetalhesZona('A')"><span data-i18n="game.zones.a.name">Tower of Insolence</span> <span data-i18n="game.zones.a.costShort">10k</span></button>
+                        <button type="button" class="tp-button tp-button--s" onclick="abrirDetalhesZona('S')"><span data-i18n="game.zones.s.name">Imperial Tomb</span> <span data-i18n="game.zones.s.costShort">50k</span></button>
                     </div>
                 </div>
 
@@ -1244,7 +1244,7 @@
                 </div>
             </div>
             <div class="tela-floresta-inner">
-                <h4 id="hud-zona-nome">Talking Island</h4>
+                <h4 id="hud-zona-nome" data-i18n="game.zones.ng.name">Talking Island</h4>
 
                 <div id="area-cacada">
                     <button id="btn-iniciar-caca" type="button" class="btn-l2" onclick="procurarMonstros()" data-i18n="game.hunt.searchEnemies">🔍 SEARCH ENEMIES</button>
@@ -1762,7 +1762,7 @@
 
             <div class="cw-battle-header" id="war-battle-header" style="display: none;">
                 <h4 class="cw-battle-header__title" id="war-tournament-title" data-i18n="game.war.labelClanWar">CLAN WAR</h4>
-                <div id="war-clans-vs">GUERRA TOTAL</div>
+                <div id="war-clans-vs" data-i18n="game.war.vsDefault">TOTAL WAR</div>
                 <div id="war-tournament-score" class="cw-tournament-score" data-i18n="game.war.duelResult" data-i18n-params='{"aliadoWins":0,"inimigoWins":0}'>Score: 0 - 0</div>
             </div>
 
@@ -1788,7 +1788,7 @@
 
         <div id="tela-perfil" class="screen-content screen-profile">
             <div class="profile-scroll-pane">
-            <h4 class="profile-char-title">CHARACTER PROFILE</h4>
+            <h4 class="profile-char-title" data-i18n="game.inventoryUi.profileGeneric">CHARACTER PROFILE</h4>
             <div id="profile-endgame-ascension"></div>
             
             
