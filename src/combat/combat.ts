@@ -470,8 +470,17 @@ function processarMorteMonstro(index: number, mobRef?: ForestMob | null) {
         lootTurno.drops[drop] = (lootTurno.drops[drop] || 0) + qtdDrop;
     }
 
-    // Variável de zona usada para Moedas e Receitas
-    let nomeDaZona = typeof window.zonaAtual !== 'undefined' && window.zonaAtual.nome ? window.zonaAtual.nome : "";
+    // Variável de zona — grade canónica para lógica; nome canónico (EN catálogo) para RPC na nuvem
+    const zonaGrade =
+        typeof window.zonaAtual !== 'undefined' && window.zonaAtual && window.zonaAtual.id
+            ? window.zonaAtual.id
+            : 'No-Grade';
+    const zonaNomeRpc =
+        typeof window.zoneCanonicalName === 'function'
+            ? window.zoneCanonicalName(zonaGrade)
+            : typeof window.zonaAtual !== 'undefined' && window.zonaAtual && window.zonaAtual.nome
+              ? window.zonaAtual.nome
+              : '';
 
     // --- 2. Ancient Coin — só no mundo se EconomyBalance.allowAncientCoinWorldDrops (padrão: craft) ---
     const acDropMundo = typeof window.EconomyBalance !== 'undefined'
@@ -486,7 +495,7 @@ function processarMorteMonstro(index: number, mobRef?: ForestMob | null) {
         window.SupabaseAPI.validateMobLoot(
             window.charName, 
             mobMorto.idUnico, 
-            nomeDaZona, 
+            zonaNomeRpc, 
             mobMorto.isChampion, 
             !!(mobMorto.debuffs && mobMorto.debuffs.spoil),
             levelDoMob
@@ -530,12 +539,12 @@ function processarMorteMonstro(index: number, mobRef?: ForestMob | null) {
         if (antiAbuso) { chanceMoeda = 0; }
 
         if (Math.random() * 100 <= chanceMoeda) {
-            let baseCoins = 1; 
-            if (nomeDaZona.includes("Ruins")) baseCoins = 2;              
-            else if (nomeDaZona.includes("Death Pass")) baseCoins = 5;    
-            else if (nomeDaZona.includes("Dragon Valley")) baseCoins = 10;
-            else if (nomeDaZona.includes("Insolence")) baseCoins = 22;    
-            else if (nomeDaZona.includes("Imperial")) baseCoins = 52;     
+            let baseCoins = 1;
+            if (zonaGrade === 'D') baseCoins = 2;
+            else if (zonaGrade === 'C') baseCoins = 5;
+            else if (zonaGrade === 'B') baseCoins = 10;
+            else if (zonaGrade === 'A') baseCoins = 22;
+            else if (zonaGrade === 'S') baseCoins = 52;
             
             let qtdMoeda = mobMorto.isChampion ? (baseCoins * 2) : baseCoins; 
             lootTurno.drops["Ancient Coin"] = (lootTurno.drops["Ancient Coin"] || 0) + qtdMoeda;
@@ -545,7 +554,7 @@ function processarMorteMonstro(index: number, mobRef?: ForestMob | null) {
         }
 
         // --- 3. DROP LENDÁRIO LOCAL ---
-        if (nomeDaZona.includes("Imperial") || nomeDaZona.includes("Dragon")) {
+        if (zonaGrade === 'B' || zonaGrade === 'S') {
             let chanceRecipe = mobMorto.isChampion ? 0.5 : 0.1;
             if (Math.random() * 100 <= chanceRecipe) {
                 let listaRecs = ['Recipe: Vesper Noble Heavy', 'Recipe: Vesper Noble Light', 'Recipe: Vesper Noble Robe', 'Recipe: Vesper Weapon', 'Recipe: Vesper Jewel'];

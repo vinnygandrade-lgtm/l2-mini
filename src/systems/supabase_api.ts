@@ -8,6 +8,30 @@
 import type { SupabaseApi, SupabaseConfig } from '../types/game';
 import { registerGlobal } from '../runtime/register-global';
 
+type RealtimeI18nPayload = {
+    mensagem?: unknown;
+    msg?: unknown;
+    i18nKey?: string;
+    i18nParams?: Record<string, string | number>;
+};
+
+function resolveRealtimeI18nText(
+    payload: RealtimeI18nPayload | null | undefined,
+    fallbackField: 'mensagem' | 'msg' = 'mensagem',
+): string {
+    if (!payload) return '';
+    if (payload.i18nKey && typeof window.t === 'function') {
+        try {
+            const text = window.t(payload.i18nKey, payload.i18nParams || {});
+            if (text && text !== payload.i18nKey) return text;
+        } catch {
+            /* noop */
+        }
+    }
+    const fb = payload[fallbackField];
+    return fb != null ? String(fb) : '';
+}
+
 const SUPABASE_CONFIG: SupabaseConfig = {
     url: 'https://kgjcbujkzsrgcjcowxts.supabase.co', // Sua URL do Supabase
     anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtnamNidWprenNyZ2NqY293eHRzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzczNzk0NzcsImV4cCI6MjA5Mjk1NTQ3N30.s1C3ubMA_ZRrkCmtk1nLC4VjDImk707X1wSTsA9CL9A', // Sua Anon Key do Supabase
@@ -317,7 +341,7 @@ const SupabaseAPI = {
     unwrapRealtimeChatPayload(envelope) {
         let cur = envelope;
         for (let depth = 0; depth < 8 && cur != null && typeof cur === 'object'; depth++) {
-            if (typeof cur.autor === 'string' && cur.mensagem != null && String(cur.mensagem).length >= 0) {
+            if (typeof cur.autor === 'string' && (cur.mensagem != null || cur.i18nKey)) {
                 return cur;
             }
             const next = cur.payload;
@@ -416,15 +440,17 @@ const SupabaseAPI = {
             })
             .on('broadcast', { event: 'chat' }, (envelope) => {
                 const inner = this.unwrapRealtimeChatPayload(envelope);
-                if (!inner || typeof inner.autor !== 'string' || inner.mensagem == null) return;
+                if (!inner || typeof inner.autor !== 'string') return;
+                const displayMsg = resolveRealtimeI18nText(inner, 'mensagem');
+                if (!displayMsg) return;
                 const myName = typeof window.charName === 'string' ? window.charName.trim().toLowerCase() : '';
                 const autorNorm = inner.autor.trim().toLowerCase();
 
-                console.log(`📥 [Chat] Recebido de ${inner.autor}: ${inner.mensagem}`);
+                console.log(`📥 [Chat] Recebido de ${inner.autor}: ${displayMsg}`);
 
                 if (myName && autorNorm === myName && inner.tabSessionId === this.tabSessionId) return;
                 if (typeof window.adicionarMensagemChat === 'function') {
-                    window.adicionarMensagemChat(inner.autor, inner.mensagem, inner.tipo || 'papel', inner.canal || 'global', true, null, inner.ascensionTitle || '');
+                    window.adicionarMensagemChat(inner.autor, displayMsg, inner.tipo || 'papel', inner.canal || 'global', true, null, inner.ascensionTitle || '');
                 }
             })
             .on('broadcast', { event: 'combat' }, (payload) => {
@@ -454,7 +480,8 @@ const SupabaseAPI = {
                         if (this.client) await this.client.auth.signOut();
                         setTimeout(() => location.reload(), 3000);
                     } else if (action === 'force_update') {
-                        if (data && data.msg) window.mostrarAviso(data.msg);
+                        const notice = resolveRealtimeI18nText(data, 'msg');
+                        if (notice) window.mostrarAviso(notice);
                         if (window.RewardEngine) await window.RewardEngine.checkRewards();
                         if (data && data.reloadSave === true && typeof window.carregarJogo === 'function') {
                             console.log("🔄 [Supabase] Recebido comando de reload de save.");
@@ -483,19 +510,23 @@ const SupabaseAPI = {
         });
     },
 
-    async broadcastChat(autor, mensagem, tipo, canal, ascensionTitle) {
+    async broadcastChat(autor, mensagem, tipo, canal, ascensionTitle, opts) {
         if (!this.presenceChannel) {
             console.log("📡 [Supabase] Tentando reconectar canal antes de enviar chat...");
             await this.ensureChatConnected(window.charName, {});
         }
         if (!this.presenceChannel) return false;
         
-        console.log(`📤 [Chat] Enviando: ${mensagem}`);
+        console.log(`📤 [Chat] Enviando: ${mensagem || (opts && opts.i18nKey) || ''}`);
 
-        const payloadOut = {
+        const payloadOut: Record<string, unknown> = {
             autor, mensagem, tipo, canal, ascensionTitle: ascensionTitle || '',
             sessionId: this.tabSessionId, tabSessionId: this.tabSessionId
         };
+        if (opts && opts.i18nKey) {
+            payloadOut.i18nKey = opts.i18nKey;
+            payloadOut.i18nParams = opts.i18nParams || {};
+        }
         
         const status = await this.presenceChannel.send({
             type: 'broadcast', event: 'chat', payload: payloadOut

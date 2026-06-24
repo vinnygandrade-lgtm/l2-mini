@@ -341,13 +341,19 @@ const GMEngine: GmEngineApi = {
 
                 await window.SupabaseAPI.broadcastChat?.(
                     'SYSTEM',
-                    `✦ [GM] A special gift was sent to ${targetName}: ${prettyAmount} ${coinName}. Safe travels in Aden!`,
+                    '',
                     'GM_ANNOUNCEMENT',
                     'global',
+                    '',
+                    {
+                        i18nKey: 'game.gm.chatGiftCurrency',
+                        i18nParams: { name: targetName, amount: prettyAmount, currency: coinName },
+                    },
                 );
 
                 await window.SupabaseAPI.broadcastGM?.('force_update', targetName, {
-                    msg: `✨ A GM gift is waiting for you! Open the 🎁 in the corner — ${prettyAmount} ${coinName} from the team.`,
+                    i18nKey: 'game.gm.forceUpdateGiftCurrency',
+                    i18nParams: { amount: prettyAmount, currency: coinName },
                 });
             } catch (err) {
                 this._gmNotify(
@@ -413,13 +419,19 @@ const GMEngine: GmEngineApi = {
 
                 await window.SupabaseAPI.broadcastChat?.(
                     'SYSTEM',
-                    `✦ [GM] ${targetName} received a team gift: ${qty}x ${itemKey}. May it serve you well in Aden!`,
+                    '',
                     'GM_ANNOUNCEMENT',
                     'global',
+                    '',
+                    {
+                        i18nKey: 'game.gm.chatGiftItem',
+                        i18nParams: { name: targetName, qty, item: itemNomeBonito || itemKey },
+                    },
                 );
 
                 await window.SupabaseAPI.broadcastGM?.('force_update', targetName, {
-                    msg: `✨ The GM left a gift in the Reward Hub: ${qty}x ${itemKey}. Open the 🎁 — it was prepared for you.`,
+                    i18nKey: 'game.gm.forceUpdateGiftItem',
+                    i18nParams: { qty, item: itemNomeBonito || itemKey },
                 });
             } catch (err) {
                 this._gmNotify(

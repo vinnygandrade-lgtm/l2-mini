@@ -1497,6 +1497,7 @@ export interface SupabaseApi {
     tipo: string,
     canal: string,
     ascensionTitle?: string,
+    opts?: { i18nKey?: string; i18nParams?: Record<string, string | number> },
   ) => Promise<boolean>;
   presenceChannel?: SupabasePresenceChannelLite | null;
   fetchClanChatHistory?: (clanId: string | number, limit?: number) => Promise<ClanChatRow[]>;

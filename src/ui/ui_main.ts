@@ -1399,6 +1399,20 @@ function zoneCatalogText(grade: string, field: 'name' | 'desc'): string {
     return field === 'name' ? catalog.nome : catalog.descricao;
 }
 
+function zoneCatalogList(grade: string, listKey: 'inhabitants' | 'rewards', fallback: string[]): string[] {
+    const sfx = ZONE_GRADE_I18N[grade];
+    if (sfx && window.I18n && typeof window.I18n.getArray === 'function') {
+        const arr = window.I18n.getArray(`game.zones.${sfx}.${listKey}`);
+        if (Array.isArray(arr) && arr.length) return arr.map((entry) => String(entry));
+    }
+    return fallback;
+}
+
+function zoneCanonicalName(grade: string): string {
+    const catalog = typeof catalogoZonas !== 'undefined' ? catalogoZonas[grade] : null;
+    return catalog?.nome ?? grade;
+}
+
 function zoneDisplayName(grade: string | null | undefined): string {
     const g = grade || 'No-Grade';
     return zoneCatalogText(g, 'name');
@@ -1440,11 +1454,14 @@ function abrirDetalhesZona(grade) {
               : `${dados.custo.toLocaleString()} Adena`;
     document.getElementById('zona-detalhe-descricao').innerText = zoneCatalogText(grade, 'desc');
 
+    const monstros = zoneCatalogList(grade, 'inhabitants', dados.monstros);
+    const recompensas = zoneCatalogList(grade, 'rewards', dados.recompensas);
+
     const monstrosCont = document.getElementById('zona-detalhe-monstros');
-    monstrosCont.innerHTML = dados.monstros.map(m => `<span class="zone-tag">${m}</span>`).join('');
+    monstrosCont.innerHTML = monstros.map(m => `<span class="zone-tag">${m}</span>`).join('');
 
     const recompensasCont = document.getElementById('zona-detalhe-recompensas');
-    recompensasCont.innerHTML = dados.recompensas.map(r => `<span class="zone-tag" style="border-color: #ca8a04; color: #facc15;">${r}</span>`).join('');
+    recompensasCont.innerHTML = recompensas.map(r => `<span class="zone-tag" style="border-color: #ca8a04; color: #facc15;">${r}</span>`).join('');
 
     const btnViajar = document.getElementById('btn-confirmar-viagem');
     if (btnViajar) {
@@ -1586,6 +1603,7 @@ window.verificarLimitePersonagem = verificarLimitePersonagem;
 window.abrirDetalhesZona = abrirDetalhesZona;
 window.teleportarParaZona = teleportarParaZona;
 window.zoneDisplayName = zoneDisplayName;
+window.zoneCanonicalName = zoneCanonicalName;
 window.refreshHuntZoneHud = refreshHuntZoneHud;
 window.recolherLootRaid = recolherLootRaid;
 window.abrirPerfilJogadorRanking = abrirPerfilJogadorRanking;

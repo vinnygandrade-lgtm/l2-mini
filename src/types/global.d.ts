@@ -80,6 +80,7 @@ declare global {
     abrirDetalhesZona?: (grade: string) => void;
     teleportarParaZona?: (grade: string) => void;
     zoneDisplayName?: (grade: string | null | undefined) => string;
+    zoneCanonicalName?: (grade: string) => string;
     refreshHuntZoneHud?: () => void;
     recolherLootRaid?: () => void;
     abrirPerfilJogadorRanking?: (nome: string, isBot?: boolean) => void;
@@ -513,6 +514,7 @@ declare global {
   function refreshMarketUiI18n(): void;
   function refreshHuntZoneHud(): void;
   function zoneDisplayName(grade: string | null | undefined): string;
+  function zoneCanonicalName(grade: string): string;
   function fecharJanelaAcao(): void;
   function fecharModalRegistrarMercado(): void;
   function fecharSeletorItemMarket(): void;

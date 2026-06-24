@@ -842,7 +842,11 @@
                 },
                 gm: {
                     announcementSent: 'Announcement sent!',
-                    kickCommandSent: 'Command sent to kick {name}'
+                    kickCommandSent: 'Command sent to kick {name}',
+                    chatGiftCurrency: '✦ [GM] A special gift was sent to {name}: {amount} {currency}. Safe travels in Aden!',
+                    chatGiftItem: '✦ [GM] {name} received a team gift: {qty}× {item}. May it serve you well in Aden!',
+                    forceUpdateGiftCurrency: '✨ A GM gift is waiting for you! Open the 🎁 in the corner — {amount} {currency} from the team.',
+                    forceUpdateGiftItem: '✨ The GM left a gift in the Reward Hub: {qty}× {item}. Open the 🎁 — it was prepared for you.'
                 },
                 enchant: {
                     augmentRequirement: 'Requirement: {adena}a, {lifeStone}× Life Stone and {ancientCoin}× Ancient Coin.',
@@ -1376,32 +1380,44 @@
                     ng: {
                         name: 'Talking Island',
                         desc: 'The starting point for every adventurer. A peaceful isle—yet corrupted beasts stalk its shores.',
-                        costShort: 'Free'
+                        costShort: 'Free',
+                        inhabitants: ['Spider', 'Wolf', 'Orc Archer'],
+                        rewards: ['Adena', 'Animal Skin', 'Iron Ore']
                     },
                     d: {
                         name: 'Ruins of Despair',
                         desc: 'Ancient ruins overrun by skeleton hosts and restless dead.',
-                        costShort: '100a'
+                        costShort: '100a',
+                        inhabitants: ['Skeleton', 'Zombie', 'Shield Skeleton'],
+                        rewards: ['Adena', 'Animal Bone', 'Coal']
                     },
                     c: {
                         name: 'Death Pass',
                         desc: 'A narrow, shadowed gorge—travelers say the wind still carries the cries of the ambushed.',
-                        costShort: '500a'
+                        costShort: '500a',
+                        inhabitants: ['Wyvern', 'Guardian Tree', 'Ghost'],
+                        rewards: ['Adena', 'Charcoal', 'Ancient Coin']
                     },
                     b: {
                         name: 'Dragon Valley',
                         desc: 'A scorching volcanic vale—home to lesser drakes and beasts of molten stone.',
-                        costShort: '2k'
+                        costShort: '2k',
+                        inhabitants: ['Drake', 'Cave Maiden', 'Dragon Guard'],
+                        rewards: ['Adena', 'Recipes', 'Ancient Coin']
                     },
                     a: {
                         name: 'Tower of Insolence',
                         desc: 'A colossal tower that defies the heavens—each floor deadlier than the last.',
-                        costShort: '10k'
+                        costShort: '10k',
+                        inhabitants: ['Angel', 'Halt', 'Messenger'],
+                        rewards: ['Adena', 'S-Grade Mats', 'Ancient Coin']
                     },
                     s: {
                         name: 'Imperial Tomb',
                         desc: 'The final resting hall of long-fallen emperors—only the strongest heroes endure here.',
-                        costShort: '50k'
+                        costShort: '50k',
+                        inhabitants: ['Imperial Guard', 'Lich', 'Harik'],
+                        rewards: ['Adena', 'Elite Recipes', 'Ancient Coin']
                     }
                 },
                 hunt: {
@@ -2492,7 +2508,11 @@
                 },
                 gm: {
                     announcementSent: 'Anúncio enviado!',
-                    kickCommandSent: 'Comando enviado para expulsar {name}'
+                    kickCommandSent: 'Comando enviado para expulsar {name}',
+                    chatGiftCurrency: '✦ [GM] Um presente especial foi enviado a {name}: {amount} {currency}. Boa jornada em Aden!',
+                    chatGiftItem: '✦ [GM] {name} recebeu um presente da equipe: {qty}× {item}. Que sirva bem em Aden!',
+                    forceUpdateGiftCurrency: '✨ Há um presente GM esperando por você! Abra o 🎁 no canto — {amount} {currency} da equipe.',
+                    forceUpdateGiftItem: '✨ A equipe GM deixou um presente no Hub de Recompensas: {qty}× {item}. Abra o 🎁 — foi preparado para você.'
                 },
                 enchant: {
                     augmentRequirement: 'Requisito: {adena}a, {lifeStone}× Pedra da Vida e {ancientCoin}× Moeda ancestral.',
@@ -3026,32 +3046,44 @@
                     ng: {
                         name: 'Talking Island',
                         desc: 'O ponto de partida de todo aventureiro. Uma ilha pacífica — mas feras corrompidas rondam suas praias.',
-                        costShort: 'Grátis'
+                        costShort: 'Grátis',
+                        inhabitants: ['Aranha', 'Lobo', 'Orc Arqueiro'],
+                        rewards: ['Adena', 'Pele de animal', 'Minério de ferro']
                     },
                     d: {
                         name: 'Ruins of Despair',
                         desc: 'Ruínas antigas tomadas por hordas de esqueletos e mortos inquietos.',
-                        costShort: '100a'
+                        costShort: '100a',
+                        inhabitants: ['Esqueleto', 'Zumbi', 'Esqueleto Escudeiro'],
+                        rewards: ['Adena', 'Osso de animal', 'Carvão']
                     },
                     c: {
                         name: 'Death Pass',
                         desc: 'Um desfiladeiro estreito e sombrio — dizem que o vento ainda carrega os gritos dos emboscados.',
-                        costShort: '500a'
+                        costShort: '500a',
+                        inhabitants: ['Wyvern', 'Árvore Guardiã', 'Fantasma'],
+                        rewards: ['Adena', 'Carvão vegetal', 'Moeda ancestral']
                     },
                     b: {
                         name: 'Dragon Valley',
                         desc: 'Um vale vulcânico escaldante — lar de drakes menores e feras de pedra fundida.',
-                        costShort: '2k'
+                        costShort: '2k',
+                        inhabitants: ['Drake', 'Donzela da Caverna', 'Guarda-dragão'],
+                        rewards: ['Adena', 'Receitas', 'Moeda ancestral']
                     },
                     a: {
                         name: 'Tower of Insolence',
                         desc: 'Uma torre colossal que desafia os céus — cada andar mais mortal que o anterior.',
-                        costShort: '10k'
+                        costShort: '10k',
+                        inhabitants: ['Anjo', 'Halt', 'Mensageiro'],
+                        rewards: ['Adena', 'Materiais S-Grade', 'Moeda ancestral']
                     },
                     s: {
                         name: 'Imperial Tomb',
                         desc: 'O salão final de imperadores caídos — só os heróis mais fortes resistem aqui.',
-                        costShort: '50k'
+                        costShort: '50k',
+                        inhabitants: ['Guarda Imperial', 'Lich', 'Harik'],
+                        rewards: ['Adena', 'Receitas elite', 'Moeda ancestral']
                     }
                 },
                 hunt: {
