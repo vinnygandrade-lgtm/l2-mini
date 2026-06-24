@@ -28,6 +28,8 @@ export function slugRpcErrorCode(raw: string): string {
 export type CloudRpcMessageOptions = {
   prefix?: string;
   fallbackKey?: string;
+  /** `error_` (default) → `prefix.error_slug`; `dot` → `prefix.slug` (e.g. game.clan.rpc.*) */
+  keyStyle?: 'error_' | 'dot';
 };
 
 /**
@@ -44,7 +46,9 @@ export function cloudRpcMessage(code: unknown, options?: CloudRpcMessageOptions)
   }
 
   if (slug) {
-    const specificKey = `${prefix}.error_${slug}`;
+    const keyStyle = options?.keyStyle ?? 'error_';
+    const specificKey =
+      keyStyle === 'dot' ? `${prefix}.${slug}` : `${prefix}.error_${slug}`;
     const specific = window.t(specificKey);
     if (specific !== specificKey) return specific;
   }

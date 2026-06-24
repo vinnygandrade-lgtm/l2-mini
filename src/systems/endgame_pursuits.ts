@@ -194,10 +194,12 @@ async function claimWeeklyEliteHunt(): Promise<void> {
 
             if (error) {
                 console.error('[Ascension RPC Error]', error);
-                const errMsg = typeof error === 'object' && error && 'message' in error
-                    ? String((error as { message?: string }).message ?? error)
-                    : String(error);
-                if (typeof window.l2Alert === 'function') window.l2Alert(_t('game.cloud.error') + ': ' + errMsg);
+                if (typeof window.l2Alert === 'function') {
+                    const msg = typeof window.cloudRpcMessage === 'function'
+                        ? window.cloudRpcMessage(error, { prefix: 'game.endgame', fallbackKey: 'game.cloud.error' })
+                        : String(error);
+                    window.l2Alert(msg);
+                }
                 if (btn instanceof HTMLButtonElement) btn.disabled = false;
                 return;
             }
@@ -224,7 +226,10 @@ async function claimWeeklyEliteHunt(): Promise<void> {
             } else {
                 const errCode = claimData?.error ?? 'unknown_error';
                 if (typeof window.l2Alert === 'function') {
-                    window.l2Alert(_t('game.endgame.error_' + errCode) || errCode);
+                    const msg = typeof window.cloudRpcMessage === 'function'
+                        ? window.cloudRpcMessage(errCode, { prefix: 'game.endgame', fallbackKey: 'game.cloud.error' })
+                        : (_t('game.endgame.error_' + errCode) || errCode);
+                    window.l2Alert(msg);
                 }
                 if (btn instanceof HTMLButtonElement) btn.disabled = false;
             }

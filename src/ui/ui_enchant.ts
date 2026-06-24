@@ -444,7 +444,12 @@ async function executarEnchant(): Promise<void> {
             
             if (error) {
                 console.error('[Enchant RPC Error]', error);
-                if (typeof window.l2Alert === 'function') window.l2Alert(typeof window.t === 'function' ? window.t('game.cloud.error') + ': ' + _rpcErrorMessage(error) : 'Cloud Error: ' + _rpcErrorMessage(error));
+                if (typeof window.l2Alert === 'function') {
+                    const msg = typeof window.cloudRpcMessage === 'function'
+                        ? window.cloudRpcMessage(error)
+                        : _rpcErrorMessage(error);
+                    window.l2Alert(msg);
+                }
                 btnAcaoEnchant.disabled = false;
                 _enchantInProgress = false;
                 btnAcaoEnchant.innerText = (typeof window.t === 'function') ? window.t('game.enchantUi.enchant') : 'ENCHANT';
@@ -524,8 +529,8 @@ async function executarEnchant(): Promise<void> {
             } else {
                 const msg = (rpcData && rpcData.error) ? String(rpcData.error) : '';
                 if (typeof window.l2Alert === 'function') {
-                    window.l2Alert((typeof window.t === 'function')
-                        ? window.t('game.cloud.error') + (msg ? ': ' + msg : '')
+                    window.l2Alert(typeof window.cloudRpcMessage === 'function'
+                        ? window.cloudRpcMessage(msg || 'unknown')
                         : ('Cloud error' + (msg ? ': ' + msg : '')));
                 }
                 btnAcaoEnchant.disabled = false;
@@ -940,11 +945,10 @@ async function executarAugment(): Promise<void> {
             if (error) {
                 console.error('[Augment RPC Error]', error);
                 if (typeof window.l2Alert === 'function') {
-                    window.l2Alert(
-                        typeof window.t === 'function'
-                            ? window.t('game.cloud.error') + ': ' + _rpcErrorMessage(error)
-                            : 'Cloud Error: ' + _rpcErrorMessage(error)
-                    );
+                    const msg = typeof window.cloudRpcMessage === 'function'
+                        ? window.cloudRpcMessage(error)
+                        : _rpcErrorMessage(error);
+                    window.l2Alert(msg);
                 }
                 btn.disabled = false;
                 btn.innerText = (typeof window.t === 'function') ? window.t('game.enchantUi.augmentBtn') : 'AUGMENT';

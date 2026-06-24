@@ -30,6 +30,8 @@ const AuthEngine = {
     _manualPasswordLoginInProgress: false,
     /** Fluxo do link de recuperação de senha no e-mail */
     _passwordRecoveryMode: false,
+    /** Chave da conta localStorage durante reset offline */
+    _offlinePasswordResetKey: null as string | null,
     _fromAuthStateSignedIn: false,
 
     tips: [
@@ -486,14 +488,7 @@ const AuthEngine = {
                 authT('auth.recoveryConfirmTitle')
             );
             if (confirmed) {
-                const newPass = prompt(authT('auth.recoveryPromptPass'));
-                if (newPass && newPass.length >= 6) {
-                    accounts[foundUser].password = newPass;
-                    localStorage.setItem('l2mini_accounts', JSON.stringify(accounts));
-                    window.l2Alert(authT('auth.passwordUpdated'));
-                } else if (newPass) {
-                    window.l2Alert(authT('auth.passwordTooShort'));
-                }
+                this.showOfflinePasswordResetForm(foundUser, hiddenEmail);
             }
         } else {
             window.l2Alert(authT('auth.accountNotFoundRecovery'));
@@ -553,6 +548,70 @@ const AuthEngine = {
         console.log("✅ [Auth] Formulário de nova senha exibido.");
     },
 
+    showOfflinePasswordResetForm(accountKey: string, maskedEmail: string) {
+        this._offlinePasswordResetKey = accountKey;
+        this._passwordRecoveryMode = false;
+
+        const forms = ['login-form', 'register-form', 'recover-form', 'recover-login-form', 'password-recovery-form'];
+        forms.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.style.setProperty('display', 'none', 'important');
+        });
+
+        const offline = document.getElementById('offline-password-reset-form');
+        if (offline) offline.style.setProperty('display', 'block', 'important');
+
+        const display = document.getElementById('offline-reset-account-display');
+        if (display) display.innerText = maskedEmail ? maskedEmail.toUpperCase() : accountKey.toUpperCase();
+
+        const a = document.getElementById('offline-reset-new-password');
+        const b = document.getElementById('offline-reset-new-password-confirm');
+        if (a instanceof HTMLInputElement) a.value = '';
+        if (b instanceof HTMLInputElement) b.value = '';
+    },
+
+    submitOfflinePasswordReset() {
+        if (this.loading) return;
+        const accountKey = this._offlinePasswordResetKey;
+        if (!accountKey) {
+            window.l2Alert(authT('auth.accountNotFoundRecovery'));
+            return;
+        }
+
+        const a = document.getElementById('offline-reset-new-password');
+        const b = document.getElementById('offline-reset-new-password-confirm');
+        const p1 = a instanceof HTMLInputElement ? a.value : '';
+        const p2 = b instanceof HTMLInputElement ? b.value : '';
+
+        if (!p1 || !p2) {
+            window.l2Alert(authT('auth.registerFields'));
+            return;
+        }
+        if (p1 !== p2) {
+            window.l2Alert(authT('auth.passwordMismatch'));
+            return;
+        }
+        if (p1.length < 6) {
+            window.l2Alert(authT('auth.passwordTooShort'));
+            return;
+        }
+
+        const accounts = JSON.parse(localStorage.getItem('l2mini_accounts') || '{}');
+        if (!accounts[accountKey]) {
+            window.l2Alert(authT('auth.accountNotFoundRecovery'));
+            this._offlinePasswordResetKey = null;
+            this.showLogin();
+            return;
+        }
+
+        accounts[accountKey].password = p1;
+        localStorage.setItem('l2mini_accounts', JSON.stringify(accounts));
+        this._offlinePasswordResetKey = null;
+        window.l2Alert(authT('auth.passwordUpdated'), () => {
+            this.showLogin();
+        });
+    },
+
     async submitPasswordRecovery() {
         if (this.loading) return;
         const a = document.getElementById('recovery-new-password');
@@ -602,42 +661,54 @@ const AuthEngine = {
 
     showRegister() {
         this._passwordRecoveryMode = false;
+        this._offlinePasswordResetKey = null;
         document.getElementById('login-form').style.display = 'none';
         document.getElementById('register-form').style.display = 'block';
         document.getElementById('recover-form').style.display = 'none';
         document.getElementById('recover-login-form').style.display = 'none';
         const pr = document.getElementById('password-recovery-form');
         if (pr) pr.style.display = 'none';
+        const offline = document.getElementById('offline-password-reset-form');
+        if (offline) offline.style.display = 'none';
     },
 
     showLogin() {
         this._passwordRecoveryMode = false;
+        this._offlinePasswordResetKey = null;
         document.getElementById('login-form').style.display = 'block';
         document.getElementById('register-form').style.display = 'none';
         document.getElementById('recover-form').style.display = 'none';
         document.getElementById('recover-login-form').style.display = 'none';
         const pr = document.getElementById('password-recovery-form');
         if (pr) pr.style.display = 'none';
+        const offline = document.getElementById('offline-password-reset-form');
+        if (offline) offline.style.display = 'none';
     },
 
     showRecover() {
         this._passwordRecoveryMode = false;
+        this._offlinePasswordResetKey = null;
         document.getElementById('login-form').style.display = 'none';
         document.getElementById('register-form').style.display = 'none';
         document.getElementById('recover-form').style.display = 'block';
         document.getElementById('recover-login-form').style.display = 'none';
         const pr = document.getElementById('password-recovery-form');
         if (pr) pr.style.display = 'none';
+        const offline = document.getElementById('offline-password-reset-form');
+        if (offline) offline.style.display = 'none';
     },
 
     showRecoverLogin() {
         this._passwordRecoveryMode = false;
+        this._offlinePasswordResetKey = null;
         document.getElementById('login-form').style.display = 'none';
         document.getElementById('register-form').style.display = 'none';
         document.getElementById('recover-form').style.display = 'none';
         document.getElementById('recover-login-form').style.display = 'block';
         const pr = document.getElementById('password-recovery-form');
         if (pr) pr.style.display = 'none';
+        const offline = document.getElementById('offline-password-reset-form');
+        if (offline) offline.style.display = 'none';
     },
 
     async recoverUsername(email) {

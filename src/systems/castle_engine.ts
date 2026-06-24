@@ -265,7 +265,10 @@ const CastleEngine = {
                     window.atualizar?.();
                     if (document.getElementById('castle-leader-menu')) document.getElementById('castle-leader-menu')!.remove();
                 } else {
-                    window.mostrarAviso(typeof window.t === 'function' ? window.t('game.cloud.error') + ': ' + res.error : 'Error: ' + res.error);
+                    const msg = typeof window.cloudRpcMessage === 'function'
+                        ? window.cloudRpcMessage(res?.error)
+                        : String(res?.error || '');
+                    window.mostrarAviso(msg);
                 }
             } catch (e) {
                 console.error("[Castle] Erro ao sacar tesouro cloud:", e);

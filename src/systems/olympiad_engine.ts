@@ -74,6 +74,8 @@ const OlympiadEngine = {
     olyBasicAttackLockUntil: 0,
     rewardsClaimed: [], // Lista de IDs de patentes já resgatadas
     _claimingReward: false,
+    _previewLoading: false,
+    _previewOpponent: null as { nome: string; isBot: boolean } | null,
     /** UUID de linha `olympiad_matches` (nuvem); obrigatório para persistir MMR em PvP real */
     olyMatchId: null,
     /** Debuffs do rival no jogador (Hamstring, etc.) — multiplicador de P.Atk do atacante */
@@ -412,6 +414,88 @@ const OlympiadEngine = {
     fecharModais() {
         document.getElementById('modal-oly-rewards').style.display = 'none';
         document.getElementById('modal-oly-tiers').style.display = 'none';
+        this.fecharOlyPreview();
+    },
+
+    fecharOlyPreview() {
+        if (typeof window.fecharModal === 'function') window.fecharModal('janela-oly-preview');
+        this._previewOpponent = null;
+    },
+
+    _renderOlyPreviewLoading() {
+        const root = document.getElementById('oly-preview-root');
+        if (!root) return;
+        root.innerHTML = `
+            <div style="text-align:center; padding:40px 20px; color:#a78bfa;">
+                <div style="font-size:2em; margin-bottom:12px; animation: pulse 1.2s infinite;">⚔️</div>
+                <div style="font-size:0.85em; letter-spacing:1px;">${this.olyT('olympiad.previewLoading')}</div>
+            </div>`;
+    },
+
+    _renderOlyPreviewContent(bot: OlympiadRival, isBot: boolean, pStats: Record<string, number>) {
+        const root = document.getElementById('oly-preview-root');
+        if (!root) return;
+
+        const getCompColor = (val1: number, val2: number, inverse = false) => {
+            if (!val1 || !val2 || val1 === val2) return '#aaa';
+            const isBetter = inverse ? val1 < val2 : val1 > val2;
+            return isBetter ? '#22c55e' : '#ef4444';
+        };
+
+        const renderStatRow = (label: string, pVal: number, bVal: number, icon: string, color: string) => `
+            <div style="display:grid; grid-template-columns: 1fr 40px 1fr; align-items:center; gap:10px; margin-bottom:12px; background:rgba(255,255,255,0.02); padding:8px; border-radius:4px; border:1px solid rgba(255,255,255,0.05);">
+                <div style="text-align:right;">
+                    <div style="font-size:0.6em; color:#666; text-transform:uppercase;">${this.olyT('olympiad.previewYou')}</div>
+                    <div style="font-size:0.9em; font-weight:bold; color:${getCompColor(pVal, bVal)};">${Math.floor(pVal || 0)}</div>
+                </div>
+                <div style="text-align:center; display:flex; flex-direction:column; align-items:center;">
+                    <div style="font-size:0.6em; color:${color}; font-weight:bold; margin-bottom:2px;">${label}</div>
+                    <div style="font-size:12px; opacity:0.7;">${icon}</div>
+                </div>
+                <div style="text-align:left;">
+                    <div style="font-size:0.6em; color:#666; text-transform:uppercase;">${this.olyT('olympiad.previewRival')}</div>
+                    <div style="font-size:0.9em; font-weight:bold; color:${getCompColor(bVal, pVal)};">${Math.floor(bVal || 0)}</div>
+                </div>
+            </div>
+        `;
+
+        const cancelLabel = this.olyT('modal.cancel');
+        const fightLabel = this.olyT('olympiad.previewFight');
+
+        root.innerHTML = `
+            <div style="padding:4px 0;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; position:relative;">
+                    <div style="text-align:center; flex:1;">
+                        <div style="width:64px; height:64px; border-radius:50%; background:#111; border:2px solid #22c55e; margin:0 auto 8px; overflow:hidden; box-shadow:0 0 15px rgba(34,197,94,0.3);">
+                            <img src="${this.getCharImg(window.playerData?.raca, window.playerData?.visual?.isFem, window.isClasseMagica(window.charClass))}" style="width:150%; transform:translate(0, 5px);" alt="">
+                        </div>
+                        <div style="color:#22c55e; font-weight:bold; font-size:0.8em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${window.charName}</div>
+                        <div style="color:#666; font-size:0.6em;">Lv.${typeof window.nivel === 'number' ? window.nivel : 1}</div>
+                    </div>
+                    <div style="font-family:'Cinzel'; color:#444; font-size:1.5em; font-weight:900; position:absolute; left:50%; transform:translateX(-50%); top:20px;">${this.olyT('olympiad.previewVs')}</div>
+                    <div style="text-align:center; flex:1;">
+                        <div style="width:64px; height:64px; border-radius:50%; background:#111; border:2px solid #ef4444; margin:0 auto 8px; overflow:hidden; box-shadow:0 0 15px rgba(239,68,68,0.3);">
+                            <img src="${this.getCharImg(bot.raca, bot.visual?.isFem, bot.isMage)}" style="width:150%; transform:translate(0, 5px);" alt="">
+                        </div>
+                        <div style="color:#ef4444; font-weight:bold; font-size:0.8em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${bot.nome}</div>
+                        <div style="color:#666; font-size:0.6em;">Lv.${bot.nivel}</div>
+                    </div>
+                </div>
+                <div style="margin-bottom:20px;">
+                    ${renderStatRow(this.olyT('olympiad.previewStatHp'), pStats.maxHp, bot.maxHp, '❤️', '#ef4444')}
+                    ${renderStatRow(this.olyT('olympiad.previewStatPAtk'), pStats.pAtk, bot.pAtk, '⚔️', '#f87171')}
+                    ${renderStatRow(this.olyT('olympiad.previewStatMAtk'), pStats.mAtk, bot.mAtk, '✨', '#60a5fa')}
+                    ${renderStatRow(this.olyT('olympiad.previewStatPDef'), pStats.pDef, bot.pDef, '🛡️', '#94a3b8')}
+                    ${renderStatRow(this.olyT('olympiad.previewStatMDef'), pStats.mDef, bot.mDef, '🔮', '#a78bfa')}
+                    ${renderStatRow(this.olyT('olympiad.previewStatSpd'), pStats.atkSpeed, bot.atkSpd, '⚡', '#fbbf24')}
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                    <button type="button" class="btn-l2" style="background:#333; border-color:#555; height:40px;" onclick="OlympiadEngine.fecharOlyPreview()">${cancelLabel}</button>
+                    <button type="button" class="btn-l2" style="background:linear-gradient(180deg, #7e22ce, #581c87); height:40px; font-weight:bold;" onclick="OlympiadEngine.confirmarDesafio()">${fightLabel}</button>
+                </div>
+            </div>`;
+
+        this._previewOpponent = { nome: String(bot.nome), isBot };
     },
 
     async recolherPremio(rankId) {
@@ -903,7 +987,7 @@ const OlympiadEngine = {
             let actionHtml = "";
             if (!isLocal) {
                 let pontosBase = 15;
-                let labelGanho = "POTENTIAL GAIN";
+                let labelGanho = this.olyT('olympiad.potentialGain');
                 let corGanho = "#22c55e";
 
                 if (isAbove) {
@@ -914,7 +998,7 @@ const OlympiadEngine = {
                     // Oponentes abaixo: Ganho reduzido (5 a 10 pts)
                     pontosBase = 10 - (Math.max(0, (indexReal - minhaPos)) * 1);
                     pontosBase = Math.max(5, pontosBase);
-                    labelGanho = "REDUCED GAIN";
+                    labelGanho = this.olyT('olympiad.reducedGain');
                     corGanho = "#facc15"; // Amarelo para indicar ganho menor
                 }
 
@@ -924,7 +1008,7 @@ const OlympiadEngine = {
                             <div style="color:${corGanho}; font-size:0.65em; font-weight:900;">+${pontosBase} PTS</div>
                             <div style="color:#666; font-size:0.55em;">${labelGanho}</div>
                         </div>
-                        <button class="btn-l2" style="padding:4px 10px; font-size:0.7em; height:auto; background:linear-gradient(180deg, ${isAbove ? '#7e22ce, #581c87' : '#444, #222'}); border-color:${isAbove ? '#a78bfa' : '#666'};" onclick="OlympiadEngine.mostrarPreviewDesafio('${op.nome}', ${!!op.isBot})">CHALLENGE</button>
+                        <button class="btn-l2" style="padding:4px 10px; font-size:0.7em; height:auto; background:linear-gradient(180deg, ${isAbove ? '#7e22ce, #581c87' : '#444, #222'}); border-color:${isAbove ? '#a78bfa' : '#666'};" onclick="OlympiadEngine.mostrarPreviewDesafio('${op.nome}', ${!!op.isBot})">${this.olyT('olympiad.challengeBtn')}</button>
                     </div>
                 `;
             }
@@ -959,6 +1043,15 @@ const OlympiadEngine = {
     },
 
     async mostrarPreviewDesafio(nome, isBot) {
+        if (this._previewLoading) return;
+        this._previewLoading = true;
+
+        const needsCloudFetch = !isBot && window.SupabaseAPI && window.SUPABASE_CONFIG?.enabled;
+        if (needsCloudFetch) {
+            this._renderOlyPreviewLoading();
+            if (typeof window.abrirModal === 'function') window.abrirModal('janela-oly-preview');
+        }
+
         let botData = null;
         let cloudRow = null;
         if (isBot) {
@@ -967,116 +1060,50 @@ const OlympiadEngine = {
                 const row = b as BotRankingSeed;
                 return (row.nome || row.farmBot1) === nome;
             }) as Record<string, unknown> | null;
-        } else {
-            if (window.SupabaseAPI && window.SUPABASE_CONFIG?.enabled) {
-                try {
-                    const { data, error } = await this.fetchOlympiadCharacterRow(nome);
-                    if (error) throw error;
-                    if (!data) {
-                        window.l2Alert("Could not load player data. Check your connection.");
-                        return;
-                    }
-                    cloudRow = data;
-                    botData = this.buildBotDataFromCharacterRow(data);
-                } catch (err) {
-                    console.error("❌ [Olympiad] Erro ao buscar oponente real:", err);
-                    window.l2Alert("Could not load player data. Check your connection.");
+        } else if (needsCloudFetch) {
+            try {
+                const { data, error } = await this.fetchOlympiadCharacterRow(nome);
+                if (error) throw error;
+                if (!data) {
+                    this.fecharOlyPreview();
+                    window.l2Alert(this.olyT('olympiad.previewLoadFailed'));
+                    this._previewLoading = false;
                     return;
                 }
+                cloudRow = data;
+                botData = this.buildBotDataFromCharacterRow(data);
+            } catch (err) {
+                console.error("❌ [Olympiad] Erro ao buscar oponente real:", err);
+                this.fecharOlyPreview();
+                window.l2Alert(this.olyT('olympiad.previewLoadFailed'));
+                this._previewLoading = false;
+                return;
             }
         }
 
-        if (!botData) return;
+        if (!botData) {
+            this.fecharOlyPreview();
+            this._previewLoading = false;
+            return;
+        }
 
         if (typeof window.calcularStatusGlobais === 'function') window.calcularStatusGlobais();
         const bot = window.OlympiadBots.gerarBotCompleto(botData) as OlympiadRival;
         if (!isBot && cloudRow) this.applyRealPlayerStatsFromCloudRow(bot, cloudRow);
-        const pStats = window.playerStats;
+        const pStats = window.playerStats as unknown as Record<string, number>;
 
-        // Função auxiliar para cor de comparação
-        const getCompColor = (val1, val2, inverse = false) => {
-            if (!val1 || !val2 || val1 === val2) return "#aaa";
-            const isBetter = inverse ? val1 < val2 : val1 > val2;
-            return isBetter ? "#22c55e" : "#ef4444";
-        };
-
-        const modal = document.createElement('div');
-        modal.id = 'oly-preview-modal';
-        modal.style = "position:fixed; inset:0; z-index:2000; background:rgba(0,0,0,0.95); display:flex; align-items:center; justify-content:center; padding:15px; backdrop-filter:blur(5px);";
-        
-        const renderStatRow = (label, pVal, bVal, icon, color) => `
-            <div style="display:grid; grid-template-columns: 1fr 40px 1fr; align-items:center; gap:10px; margin-bottom:12px; background:rgba(255,255,255,0.02); padding:8px; border-radius:4px; border:1px solid rgba(255,255,255,0.05);">
-                <div style="text-align:right;">
-                    <div style="font-size:0.6em; color:#666; text-transform:uppercase;">YOU</div>
-                    <div style="font-size:0.9em; font-weight:bold; color:${getCompColor(pVal, bVal)};">${Math.floor(pVal || 0)}</div>
-                </div>
-                <div style="text-align:center; display:flex; flex-direction:column; align-items:center;">
-                    <div style="font-size:0.6em; color:${color}; font-weight:bold; margin-bottom:2px;">${label}</div>
-                    <div style="font-size:12px; opacity:0.7;">${icon}</div>
-                </div>
-                <div style="text-align:left;">
-                    <div style="font-size:0.6em; color:#666; text-transform:uppercase;">RIVAL</div>
-                    <div style="font-size:0.9em; font-weight:bold; color:${getCompColor(bVal, pVal)};">${Math.floor(bVal || 0)}</div>
-                </div>
-            </div>
-        `;
-
-        modal.innerHTML = `
-            <div class="l2-modal" style="width:100%; max-width:400px; background:linear-gradient(180deg, #13111c, #07060a); border:1px solid #4a3623; padding:0; border-radius:8px; box-shadow:0 0 50px rgba(0,0,0,1), 0 0 20px rgba(126,34,206,0.2); overflow:hidden;">
-                <!-- Header Versus -->
-                <div style="background:linear-gradient(90deg, transparent, rgba(126,34,206,0.2), transparent); padding:15px; text-align:center; border-bottom:1px solid #333;">
-                    <h3 style="color:#d8b4fe; font-family:'Cinzel'; margin:0; font-size:1.2em; letter-spacing:3px;">VERSUS PREVIEW</h3>
-                </div>
-
-                <div style="padding:20px;">
-                    <!-- Top Comparison (Avatars) -->
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px; position:relative;">
-                        <!-- Player -->
-                        <div style="text-align:center; flex:1;">
-                            <div style="width:64px; height:64px; border-radius:50%; background:#111; border:2px solid #22c55e; margin:0 auto 8px; overflow:hidden; box-shadow:0 0 15px rgba(34,197,94,0.3);">
-                                <img src="${this.getCharImg(window.playerData?.raca, window.playerData?.visual?.isFem, window.isClasseMagica(window.charClass))}" style="width:150%; transform:translate(0, 5px);">
-                            </div>
-                            <div style="color:#22c55e; font-weight:bold; font-size:0.8em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${window.charName}</div>
-                            <div style="color:#666; font-size:0.6em;">Lv.${typeof window.nivel === 'number' ? window.nivel : 1}</div>
-                        </div>
-
-                        <div style="font-family:'Cinzel'; color:#444; font-size:1.5em; font-weight:900; position:absolute; left:50%; transform:translateX(-50%); top:20px;">VS</div>
-
-                        <!-- Rival -->
-                        <div style="text-align:center; flex:1;">
-                            <div style="width:64px; height:64px; border-radius:50%; background:#111; border:2px solid #ef4444; margin:0 auto 8px; overflow:hidden; box-shadow:0 0 15px rgba(239,68,68,0.3);">
-                                <img src="${this.getCharImg(bot.raca, bot.visual?.isFem, bot.isMage)}" style="width:150%; transform:translate(0, 5px);">
-                            </div>
-                            <div style="color:#ef4444; font-weight:bold; font-size:0.8em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${bot.nome}</div>
-                            <div style="color:#666; font-size:0.6em;">Lv.${bot.nivel}</div>
-                        </div>
-                    </div>
-
-                    <!-- Stats Comparison -->
-                    <div style="margin-bottom:25px;">
-                        ${renderStatRow('HP', pStats.maxHp, bot.maxHp, '❤️', '#ef4444')}
-                        ${renderStatRow('P. ATK', pStats.pAtk, bot.pAtk, '⚔️', '#f87171')}
-                        ${renderStatRow('M. ATK', pStats.mAtk, bot.mAtk, '✨', '#60a5fa')}
-                        ${renderStatRow('P. DEF', pStats.pDef, bot.pDef, '🛡️', '#94a3b8')}
-                        ${renderStatRow('M. DEF', pStats.mDef, bot.mDef, '🔮', '#a78bfa')}
-                        ${renderStatRow('SPD', pStats.atkSpeed, bot.atkSpd, '⚡', '#fbbf24')}
-                    </div>
-
-                    <!-- Actions -->
-                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-                        <button class="btn-l2" style="background:#333; border-color:#555; height:40px;" onclick="document.getElementById('oly-preview-modal').remove()">CANCEL</button>
-                        <button class="btn-l2" style="background:linear-gradient(180deg, #7e22ce, #581c87); height:40px; font-weight:bold;" onclick="OlympiadEngine.confirmarDesafio('${bot.nome}', ${isBot})">FIGHT!</button>
-                    </div>
-                </div>
-            </div>
-        `;
-        document.body.appendChild(modal);
+        this._renderOlyPreviewContent(bot, isBot, pStats);
+        if (!needsCloudFetch && typeof window.abrirModal === 'function') {
+            window.abrirModal('janela-oly-preview');
+        }
+        this._previewLoading = false;
     },
 
-    async confirmarDesafio(nome, isBot) {
-        const modal = document.getElementById('oly-preview-modal');
-        if (modal) modal.remove();
-        await this.desafiar(nome, isBot);
+    async confirmarDesafio() {
+        const pending = this._previewOpponent;
+        this.fecharOlyPreview();
+        if (!pending?.nome) return;
+        await this.desafiar(pending.nome, pending.isBot);
     },
 
     async desafiar(nome, isBot) {
@@ -1102,21 +1129,21 @@ const OlympiadEngine = {
                     const { data, error } = await this.fetchOlympiadCharacterRow(nome);
                     if (error) throw error;
                     if (!data) {
-                        window.l2Alert("Could not load player data for combat.");
+                        window.l2Alert(this.olyT('olympiad.previewLoadFailedCombat'));
                         return;
                     }
                     cloudRow = data;
                     botData = this.buildBotDataFromCharacterRow(data);
                 } catch (err) {
                     console.error("❌ [Olympiad] Erro ao buscar oponente real para duelo:", err);
-                    window.l2Alert("Could not load player data for combat.");
+                    window.l2Alert(this.olyT('olympiad.previewLoadFailedCombat'));
                     return;
                 }
             }
         }
 
         if (!botData) {
-            window.l2Alert("Could not load opponent data.");
+            window.l2Alert(this.olyT('olympiad.previewOpponentFailed'));
             return;
         }
 

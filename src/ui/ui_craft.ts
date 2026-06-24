@@ -339,10 +339,13 @@ async function executarCraft(): Promise<void> {
         craftVesperEscolhaIdBase,
       );
 
-      if (error) {
+        if (error) {
         console.error('[Craft RPC Error]', error);
         if (typeof window.l2Alert === 'function') {
-          window.l2Alert(craftT('game.cloud.error') + ': ' + _rpcErrorMessage(error));
+          const msg = typeof window.cloudRpcMessage === 'function'
+            ? window.cloudRpcMessage(error, { prefix: 'game.craft.error', fallbackKey: 'game.craft.error.unknown', keyStyle: 'dot' })
+            : craftT('game.craft.error.unknown');
+          window.l2Alert(msg);
         }
         if (btnExecutar) {
           btnExecutar.disabled = false;

@@ -277,6 +277,13 @@
         </div>
     </div>
 
+    <div id="janela-oly-preview" class="store-window store-window--oly-preview" style="display: none;">
+        <div class="store-header"><span data-i18n="olympiad.previewTitle">VERSUS PREVIEW</span></div>
+        <div class="store-body store-body--oly-preview">
+            <div id="oly-preview-root" role="document"></div>
+        </div>
+    </div>
+
     <div id="janela-loja" class="store-window">
         <div class="store-header"><span id="titulo-loja-span">STORE</span></div>
         
@@ -864,6 +871,27 @@
                 </div>
                 <div class="login-actions">
                     <button type="button" class="btn-login-main" data-i18n="login.saveNewPassword" onclick="AuthEngine.submitPasswordRecovery()">SAVE NEW PASSWORD</button>
+                    <button type="button" class="btn-l2 btn-login-back" data-i18n="login.backLogin" onclick="AuthEngine.showLogin()">BACK TO LOGIN</button>
+                </div>
+            </div>
+
+            <!-- Nova senha offline (contas localStorage) -->
+            <div id="offline-password-reset-form" style="display: none">
+                <p class="recover-hint">
+                    <span data-i18n="login.setPasswordHint">Choose a new password for your account.</span>
+                    <br>
+                    <strong id="offline-reset-account-display" style="color: #facc15; font-size: 1.1em;"></strong>
+                </p>
+                <div class="login-field-group">
+                    <label class="login-field-label" data-i18n="login.newPasswordLabel">NEW PASSWORD</label>
+                    <input type="password" id="offline-reset-new-password" class="login-field" data-i18n-placeholder="login.newPasswordPlaceholder" placeholder="NEW PASSWORD">
+                </div>
+                <div class="login-field-group">
+                    <label class="login-field-label" data-i18n="login.confirmNewPasswordLabel">CONFIRM NEW PASSWORD</label>
+                    <input type="password" id="offline-reset-new-password-confirm" class="login-field" data-i18n-placeholder="login.confirmNewPasswordPlaceholder" placeholder="CONFIRM NEW PASSWORD">
+                </div>
+                <div class="login-actions">
+                    <button type="button" class="btn-login-main" data-i18n="login.saveNewPassword" onclick="AuthEngine.submitOfflinePasswordReset()">SAVE NEW PASSWORD</button>
                     <button type="button" class="btn-l2 btn-login-back" data-i18n="login.backLogin" onclick="AuthEngine.showLogin()">BACK TO LOGIN</button>
                 </div>
             </div>

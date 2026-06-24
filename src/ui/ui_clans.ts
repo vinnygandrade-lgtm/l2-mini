@@ -693,8 +693,11 @@ async function confirmarCriacaoClan(): Promise<void> {
                 if (typeof window.salvarJogo === 'function') window.salvarJogo();
                 if (typeof window.atualizar === 'function') window.atualizar();
             } else {
-                const err = res && res.error ? res.error : clanT('game.cloud.error');
-                window.mostrarAviso(err);
+                const err = res && res.error ? res.error : '';
+                const msg = typeof window.cloudRpcMessage === 'function'
+                    ? window.cloudRpcMessage(err, { prefix: 'game.clan.rpc', fallbackKey: 'game.clan.rpc.unknown', keyStyle: 'dot' })
+                    : clanT('game.clan.rpc.unknown');
+                window.mostrarAviso(msg);
             }
         } catch (e) {
             console.error("[Clan Create Error]", e);
@@ -902,7 +905,11 @@ async function entrarNoClan(id: string | number): Promise<void> {
             await iniciarSistemaClans();
             renderizarClans('ranking');
         } else {
-            window.mostrarAviso((res && res.error) ? res.error : clanT('game.cloud.error'));
+            const err = (res && res.error) ? res.error : '';
+            const msg = typeof window.cloudRpcMessage === 'function'
+                ? window.cloudRpcMessage(err, { prefix: 'game.clan.rpc', fallbackKey: 'game.clan.rpc.unknown', keyStyle: 'dot' })
+                : clanT('game.clan.rpc.unknown');
+            window.mostrarAviso(msg);
         }
         return;
     }
