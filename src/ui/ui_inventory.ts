@@ -224,7 +224,9 @@ function renderizarInventario(): void {
             ? `${_l2InvIconFrameHtml(imgSrc, 'inv-img l2-coin-img')}<div class="inv-qtd">${qtd}</div>`
             : `${_l2InvIconFrameHtml(imgSrc)}<div class="inv-qtd">${qtd}</div>`;
 
-        var slotTitle = (dadosItem && dadosItem.nome) ? dadosItem.nome : nome;
+        var slotTitle = (typeof window.consumableDisplayName === 'function')
+            ? window.consumableDisplayName(nome)
+            : ((dadosItem && dadosItem.nome) ? dadosItem.nome : nome);
 
         _l2AppendInvGridSlot(grid, slotClass, innerHtml, function () {
             if (typeof window.abrirAcaoItemGeral === 'function') window.abrirAcaoItemGeral(nome);

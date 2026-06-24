@@ -20,6 +20,17 @@ const ITEM_DROP_KEYS: Record<string, string> = {
 const CONSUMABLE_KEYS: Record<string, string> = {
   'Soulshot (NG)': 'game.items.consumables.soulshotNg',
   'B. Spiritshot (NG)': 'game.items.consumables.blessedSpiritshotNg',
+  'HP Potion': 'game.items.consumables.hpPotion',
+  'Mana Potion': 'game.items.consumables.manaPotion',
+  'MP Potion': 'game.items.consumables.manaPotion',
+};
+
+const CONSUMABLE_DESC_KEYS: Record<string, string> = {
+  'HP Potion': 'game.smartbar.itemDesc.hpPotion',
+  'Mana Potion': 'game.smartbar.itemDesc.manaPotion',
+  'MP Potion': 'game.smartbar.itemDesc.manaPotion',
+  'Soulshot (NG)': 'game.smartbar.itemDesc.soulshot',
+  'B. Spiritshot (NG)': 'game.smartbar.itemDesc.spiritshot',
 };
 
 const BOSS_I18N_IDS: Record<string, string> = {
@@ -80,24 +91,75 @@ export function consumableDisplayName(itemKey: string): string {
   return itemDropDisplayName(itemKey);
 }
 
+export function consumableDescText(itemKey: string): string {
+  if (!itemKey) return '';
+  const i18nKey = CONSUMABLE_DESC_KEYS[itemKey];
+  if (i18nKey && typeof window.t === 'function') {
+    const text = window.t(i18nKey);
+    if (text && text !== i18nKey) return text;
+  }
+  return '';
+}
+
+function dailyBossI18nKey(bossId: string, field: string): string {
+  return `game.bosses.daily.${bossId}.${field}`;
+}
+
+function translateIfPresent(key: string, params?: Record<string, string | number>): string {
+  if (typeof window.t !== 'function') return '';
+  const text = window.t(key, params || {});
+  return text && text !== key ? text : '';
+}
+
+export function dailyBossRegionDisplay(bossId: string | undefined, fallback?: string): string {
+  if (!bossId) return fallback || '';
+  if (bossId.startsWith('daily_boss_')) {
+    const text = translateIfPresent(dailyBossI18nKey(bossId, 'region'));
+    if (text) return text;
+  }
+  return fallback || '';
+}
+
+export function hotbarDisplayName(slotKey: string): string {
+  if (!slotKey) return '';
+  if (slotKey === 'Attack') {
+    const attackKey = 'game.skills.names.attack';
+    const attackLabel = translateIfPresent(attackKey);
+    if (attackLabel) return attackLabel;
+    return 'Attack';
+  }
+  const consumable = consumableDisplayName(slotKey);
+  if (consumable !== slotKey) return consumable;
+  const slug = slotKey.replace(/[^a-zA-Z0-9]+/g, '_').replace(/^_|_$/g, '').toLowerCase();
+  const skillLabel = translateIfPresent(`game.skills.names.${slug}`);
+  if (skillLabel) return skillLabel;
+  return slotKey;
+}
+
 export function bossDisplayName(bossId: string | undefined, fallback?: string): string {
   if (!bossId) return fallback || '';
+  if (bossId.startsWith('daily_boss_')) {
+    const text = translateIfPresent(dailyBossI18nKey(bossId, 'name'));
+    if (text) return text;
+  }
   const slug = BOSS_I18N_IDS[bossId];
-  if (slug && typeof window.t === 'function') {
-    const key = `game.bosses.${slug}.name`;
-    const text = window.t(key);
-    if (text && text !== key) return text;
+  if (slug) {
+    const text = translateIfPresent(`game.bosses.${slug}.name`);
+    if (text) return text;
   }
   return fallback || bossId;
 }
 
 export function bossShortName(bossId: string | undefined, fallback?: string): string {
   if (!bossId) return fallback || '';
+  if (bossId.startsWith('daily_boss_')) {
+    const text = translateIfPresent(dailyBossI18nKey(bossId, 'shortName'));
+    if (text) return text;
+  }
   const slug = BOSS_I18N_IDS[bossId];
-  if (slug && typeof window.t === 'function') {
-    const key = `game.bosses.${slug}.shortName`;
-    const text = window.t(key);
-    if (text && text !== key) return text;
+  if (slug) {
+    const text = translateIfPresent(`game.bosses.${slug}.shortName`);
+    if (text) return text;
   }
   return fallback || bossId;
 }
@@ -108,11 +170,13 @@ export function raidBossLogMsg(
   params?: Record<string, string | number>,
 ): string {
   if (!bossId) return '';
+  if (bossId.startsWith('daily_boss_')) {
+    const text = translateIfPresent(dailyBossI18nKey(bossId, `log.${logKey}`), params);
+    if (text) return text;
+  }
   const slug = BOSS_I18N_IDS[bossId];
-  if (!slug || typeof window.t !== 'function') return '';
-  const key = `game.bosses.${slug}.log.${logKey}`;
-  const text = window.t(key, params || {});
-  return text && text !== key ? text : '';
+  if (!slug) return '';
+  return translateIfPresent(`game.bosses.${slug}.log.${logKey}`, params);
 }
 
 export function raidDropDisplayName(dropId: string, catalogNome?: string): string {
@@ -158,6 +222,9 @@ window.mobDisplayName = mobDisplayName;
 window.formatMobCardName = formatMobCardName;
 window.itemDropDisplayName = itemDropDisplayName;
 window.consumableDisplayName = consumableDisplayName;
+window.consumableDescText = consumableDescText;
+window.dailyBossRegionDisplay = dailyBossRegionDisplay;
+window.hotbarDisplayName = hotbarDisplayName;
 window.bossDisplayName = bossDisplayName;
 window.bossShortName = bossShortName;
 window.raidBossLogMsg = raidBossLogMsg;

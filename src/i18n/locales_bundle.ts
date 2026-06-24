@@ -927,6 +927,9 @@
                 },
                 skills: {
                     insufficientMana: 'Not enough MP!',
+                    names: {
+                        attack: 'Attack'
+                    },
                     pets: {
                         panther: 'Panther',
                         zombie: 'Zombie',
@@ -1116,7 +1119,9 @@
                     },
                     consumables: {
                         soulshotNg: 'Soulshot (NG)',
-                        blessedSpiritshotNg: 'Blessed Spiritshot (NG)'
+                        blessedSpiritshotNg: 'Blessed Spiritshot (NG)',
+                        hpPotion: 'HP Potion',
+                        manaPotion: 'Mana Potion'
                     }
                 },
                 combatMath: {
@@ -1170,6 +1175,92 @@
                             aoePlayerDamage: 'Dragon breath sears you for {damage} magic damage!',
                             specialPlayerDamage: 'Telluric implosion shatters your defenses: {damage} HP!'
                         }
+                    },
+                    daily: {
+                        daily_boss_ng: {
+                            name: 'Queen Arachnobid — Crystal Spider',
+                            shortName: 'Queen Arachnobid',
+                            region: 'Talking Island',
+                            log: {
+                                enrage: '[Frenzy] The Queen accelerates — venom and stings come faster!',
+                                basicAttack: 'The Queen pierces the crystal floor and stings the front line!',
+                                aoeSkillName: 'Web Rain',
+                                aoe: 'Web Rain — acid covers the whole field!',
+                                special: 'Spiderlings drop from the ceiling in sync!',
+                                aoePlayerDamage: 'Acid webs burn you for {damage} magic damage!',
+                                specialPlayerDamage: 'The brood bites and tears — {damage} HP lost!'
+                            }
+                        },
+                        daily_boss_d: {
+                            name: 'Barion, Headsman of the Ruins',
+                            shortName: 'Barion',
+                            region: 'Ruins of Despair',
+                            log: {
+                                enrage: '[Catacomb] Barion bleeds pestilence — every breath spreads rot!',
+                                basicAttack: 'Barion drags his rusted blade and cuts someone on the front line!',
+                                aoeSkillName: 'Putrid Fog',
+                                aoe: 'Putrid Fog — noxious mist corrodes every lung!',
+                                special: 'Barion drives the ritual spade into the ground — the floor swallows you!',
+                                aoePlayerDamage: 'The gas rots your flesh: {damage} magic damage!',
+                                specialPlayerDamage: 'Buried impact! You lose {damage} HP.'
+                            }
+                        },
+                        daily_boss_c: {
+                            name: 'Zaken\'s Shade — Strait Phantom',
+                            shortName: 'Zaken\'s Shade',
+                            region: 'Death Pass',
+                            log: {
+                                enrage: '[Echo] Zaken\'s shade screams — black magic condenses in the air!',
+                                basicAttack: 'The shade crosses the strait and slashes an adventurer head-on!',
+                                aoeSkillName: 'Strait Howl',
+                                aoe: 'Strait Howl — frozen souls pass through you!',
+                                special: 'Spectral arms clutch your silhouette!',
+                                aoePlayerDamage: 'The howl tears at your soul: {damage} magic damage!',
+                                specialPlayerDamage: 'The gloom crushes your mind — {damage} HP!'
+                            }
+                        },
+                        daily_boss_b: {
+                            name: 'Drake Matriarch "Flameheart"',
+                            shortName: 'Flameheart',
+                            region: 'Dragon Valley',
+                            log: {
+                                enrage: '[Ignition] Flameheart scorches the air — the valley becomes an inferno!',
+                                basicAttack: 'Flameheart spins her blazing tail and hurls a lesser drake at the raid!',
+                                aoeSkillName: 'Valley Flames',
+                                aoe: 'Valley Flames — a heat wave melts armor!',
+                                special: 'A drake-shaped meteor crashes down on you!',
+                                aoePlayerDamage: 'Flames wrap around you: {damage} magic damage!',
+                                specialPlayerDamage: 'Searing impact! {damage} HP burn away to ash!'
+                            }
+                        },
+                        daily_boss_a: {
+                            name: 'Sentinel of Insolence — Throne Warden',
+                            shortName: 'Sentinel',
+                            region: 'Tower of Insolence',
+                            log: {
+                                enrage: '[Judgment] The Sentinel accelerates — the whole tower becomes a weapon!',
+                                basicAttack: 'The Sentinel drops like a stone and shatters the ground beneath a target!',
+                                aoeSkillName: 'Vertical Judgment',
+                                aoe: 'Vertical Judgment — golden bolts fall in a line!',
+                                special: 'The Sentinel dives from the heavens with a glass-edged blade!',
+                                aoePlayerDamage: 'Tower lightning pierces you: {damage} magic damage!',
+                                specialPlayerDamage: 'Celestial cleave! You bleed for {damage} HP.'
+                            }
+                        },
+                        daily_boss_s: {
+                            name: 'Harik Lich Lord — Master of the Imperial Tomb',
+                            shortName: 'Harik',
+                            region: 'Imperial Tomb',
+                            log: {
+                                enrage: '[Necrosis] Harik unleashes the final rite — death hastens!',
+                                basicAttack: 'Harik channels black mist and reaps a fighter with the ritual scythe!',
+                                aoeSkillName: 'Necrocrypt Storm',
+                                aoe: 'Necrocrypt Storm — souls lash the air like cutting wind!',
+                                special: 'Harik manifests the Lich Claw — ice and hate in one blow!',
+                                aoePlayerDamage: 'The necrotic storm tears {damage} HP from you!',
+                                specialPlayerDamage: 'Spectral claws tear your soul: {damage} magic damage!'
+                            }
+                        }
                     }
                 },
                 smartbar: {
@@ -1186,7 +1277,17 @@
                     autoShotOff: 'Auto-Shot: OFF.',
                     quantity: 'Quantity:',
                     currencyNoShortcut: 'Currency cannot be assigned to shortcuts.',
-                    closeDetails: 'CLOSE'
+                    closeDetails: 'CLOSE',
+                    itemDesc: {
+                        hpPotion: 'Magic potion. Use to restore HP in combat.',
+                        manaPotion: 'Magic potion. Use to restore MP in combat.',
+                        soulshot: 'Auto-use: greatly increases physical damage.',
+                        spiritshot: 'Auto-use: greatly increases magic damage.',
+                        recipe: 'Ancient instructions used to forge powerful gear.',
+                        ancientCoin: 'Coin from a forgotten empire. Priceless.',
+                        adena: 'Common coin of Aden. Used everywhere for trade.',
+                        generic: 'A utility item.'
+                    }
                 },
                 enchantUi: {
                     windowTitle: 'ENCHANT GEAR',
@@ -2715,6 +2816,9 @@
                 },
                 skills: {
                     insufficientMana: 'Mana insuficiente!',
+                    names: {
+                        attack: 'Ataque'
+                    },
                     pets: {
                         panther: 'Pantera',
                         zombie: 'Zumbi',
@@ -2904,7 +3008,9 @@
                     },
                     consumables: {
                         soulshotNg: 'Soulshot (NG)',
-                        blessedSpiritshotNg: 'Blessed Spiritshot (NG)'
+                        blessedSpiritshotNg: 'Blessed Spiritshot (NG)',
+                        hpPotion: 'Poção de HP',
+                        manaPotion: 'Poção de MP'
                     }
                 },
                 combatMath: {
@@ -2958,6 +3064,92 @@
                             aoePlayerDamage: 'O sopro do dragão queima você por {damage} de dano mágico!',
                             specialPlayerDamage: 'A implosão telúrica quebra suas defesas: {damage} HP!'
                         }
+                    },
+                    daily: {
+                        daily_boss_ng: {
+                            name: 'Rainha Arachnobid — Aranha de Cristal',
+                            shortName: 'Rainha Arachnobid',
+                            region: 'Talking Island',
+                            log: {
+                                enrage: '[Frenesi] A Rainha acelera — veneno e ferrões vêm mais rápido!',
+                                basicAttack: 'A Rainha perfura o chão de cristal e ferrãoa a linha de frente!',
+                                aoeSkillName: 'Chuva de Teias',
+                                aoe: 'Chuva de Teias — ácido cobre todo o campo!',
+                                special: 'Filhotes caem do teto em sincronia!',
+                                aoePlayerDamage: 'Teias ácidas queimam você por {damage} de dano mágico!',
+                                specialPlayerDamage: 'A ninhada morde e rasga — {damage} HP perdidos!'
+                            }
+                        },
+                        daily_boss_d: {
+                            name: 'Barion, Carrasco das Ruínas',
+                            shortName: 'Barion',
+                            region: 'Ruínas do Desespero',
+                            log: {
+                                enrage: '[Catacumba] Barion sangra pestilência — cada respiração espalha podridão!',
+                                basicAttack: 'Barion arrasta a lâmina enferrujada e corta alguém na linha de frente!',
+                                aoeSkillName: 'Névoa Pútrida',
+                                aoe: 'Névoa Pútrida — névoa nociva corrói cada pulmão!',
+                                special: 'Barion crava a pá ritual no chão — o solo engole você!',
+                                aoePlayerDamage: 'O gás apodrece sua carne: {damage} de dano mágico!',
+                                specialPlayerDamage: 'Impacto enterrado! Você perde {damage} HP.'
+                            }
+                        },
+                        daily_boss_c: {
+                            name: 'Sombra de Zaken — Fantasma do Estreito',
+                            shortName: 'Sombra de Zaken',
+                            region: 'Death Pass',
+                            log: {
+                                enrage: '[Eco] A sombra de Zaken grita — magia negra condensa no ar!',
+                                basicAttack: 'A sombra atravessa o estreito e golpeia um aventureiro de frente!',
+                                aoeSkillName: 'Uivo do Estreito',
+                                aoe: 'Uivo do Estreito — almas congeladas passam por você!',
+                                special: 'Braços espectrais agarram sua silhueta!',
+                                aoePlayerDamage: 'O uivo rasga sua alma: {damage} de dano mágico!',
+                                specialPlayerDamage: 'A penumbra esmaga sua mente — {damage} HP!'
+                            }
+                        },
+                        daily_boss_b: {
+                            name: 'Matriarca Drake "Coração Flamejante"',
+                            shortName: 'Coração Flamejante',
+                            region: 'Vale dos Dragões',
+                            log: {
+                                enrage: '[Ignição] Coração Flamejante incendeia o ar — o vale vira um inferno!',
+                                basicAttack: 'Coração Flamejante gira a cauda flamejante e arremessa um drake menor na raid!',
+                                aoeSkillName: 'Chamas do Vale',
+                                aoe: 'Chamas do Vale — uma onda de calor derrete armaduras!',
+                                special: 'Um meteoro em forma de drake cai sobre você!',
+                                aoePlayerDamage: 'Chamas envolvem você: {damage} de dano mágico!',
+                                specialPlayerDamage: 'Impacto abrasador! {damage} HP viram cinzas!'
+                            }
+                        },
+                        daily_boss_a: {
+                            name: 'Sentinela da Insolência — Guardião do Trono',
+                            shortName: 'Sentinela',
+                            region: 'Torre da Insolência',
+                            log: {
+                                enrage: '[Julgamento] A Sentinela acelera — a torre inteira vira uma arma!',
+                                basicAttack: 'A Sentinela despenca como uma pedra e quebra o chão sob um alvo!',
+                                aoeSkillName: 'Julgamento Vertical',
+                                aoe: 'Julgamento Vertical — raios dourados caem em linha!',
+                                special: 'A Sentinela mergulha dos céus com uma lâmina de vidro!',
+                                aoePlayerDamage: 'Relâmpago da torre atravessa você: {damage} de dano mágico!',
+                                specialPlayerDamage: 'Golpe celestial! Você sangra {damage} HP.'
+                            }
+                        },
+                        daily_boss_s: {
+                            name: 'Harik, Senhor Lich — Mestre do Túmulo Imperial',
+                            shortName: 'Harik',
+                            region: 'Túmulo Imperial',
+                            log: {
+                                enrage: '[Necrose] Harik libera o rito final — a morte acelera!',
+                                basicAttack: 'Harik canaliza névoa negra e ceifa um guerreiro com a foice ritual!',
+                                aoeSkillName: 'Tempestade Necrocrypt',
+                                aoe: 'Tempestade Necrocrypt — almas chicoteiam o ar como vento cortante!',
+                                special: 'Harik manifesta a Garra Lich — gelo e ódio num só golpe!',
+                                aoePlayerDamage: 'A tempestade necrótica arranca {damage} HP de você!',
+                                specialPlayerDamage: 'Garras espectrais rasgam sua alma: {damage} de dano mágico!'
+                            }
+                        }
                     }
                 },
                 smartbar: {
@@ -2974,7 +3166,17 @@
                     autoShotOff: 'Auto-Shot: DESLIGADO.',
                     quantity: 'Quantidade:',
                     currencyNoShortcut: 'Moeda não pode ser colocada em atalhos.',
-                    closeDetails: 'FECHAR'
+                    closeDetails: 'FECHAR',
+                    itemDesc: {
+                        hpPotion: 'Poção mágica. Use para recuperar HP em combate.',
+                        manaPotion: 'Poção mágica. Use para recuperar MP em combate.',
+                        soulshot: 'Uso automático: aumenta muito o dano físico.',
+                        spiritshot: 'Uso automático: aumenta muito o dano mágico.',
+                        recipe: 'Instruções antigas para forjar equipamento poderoso.',
+                        ancientCoin: 'Moeda de um império esquecido. Inestimável.',
+                        adena: 'Moeda comum de Aden. Usada em todo comércio.',
+                        generic: 'Item utilitário.'
+                    }
                 },
                 enchantUi: {
                     windowTitle: 'ENCANTAR EQUIPAMENTO',

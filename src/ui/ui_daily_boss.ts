@@ -44,6 +44,20 @@ function dailyBossLore(bossId: DailyBossId): string {
   return dailyBossT('game.dailyBoss.loreFallback');
 }
 
+function dailyBossDisplayName(bossId: string | null | undefined, fallback: string): string {
+  if (bossId && typeof window.bossDisplayName === 'function') {
+    return window.bossDisplayName(bossId, fallback);
+  }
+  return fallback;
+}
+
+function dailyBossRegionLabel(bossId: string | null | undefined, fallback: string): string {
+  if (bossId && typeof window.dailyBossRegionDisplay === 'function') {
+    return window.dailyBossRegionDisplay(bossId, fallback);
+  }
+  return fallback;
+}
+
 function getDailyBossCatalog(id: string | null | undefined): DailyBossCatalogEntry | null {
   if (!id || !window.catalogoBossesDiarios) return null;
   const row = window.catalogoBossesDiarios[id];
@@ -161,12 +175,13 @@ function atualizarPainelBossDiario(): void {
       this.src = 'assets/npcs/magister.png';
     };
     img.src = dados.img || '';
-    img.alt = dados.nome;
+    img.alt = dailyBossDisplayName(bossId, dados.nome);
   }
-  if (nomeEl) nomeEl.innerText = dados.nome;
+  if (nomeEl) nomeEl.innerText = dailyBossDisplayName(bossId, dados.nome);
   if (regiaoEl) {
-    regiaoEl.innerText = dados.regiao
-      ? dailyBossT('game.dailyBoss.regionLabel', { region: dados.regiao })
+    const region = dailyBossRegionLabel(bossId, dados.regiao || '');
+    regiaoEl.innerText = region
+      ? dailyBossT('game.dailyBoss.regionLabel', { region })
       : '';
   }
   if (gradeEl) {
@@ -214,14 +229,14 @@ function atualizarWorldDailyBossUI(): void {
     let regiao = '';
     const ultimoDados = getDailyBossCatalog(ultimoId);
     if (ultimoDados) {
-      nome = ultimoDados.nome;
-      regiao = ultimoDados.regiao || '';
+      nome = dailyBossDisplayName(ultimoId, ultimoDados.nome);
+      regiao = dailyBossRegionLabel(ultimoId, ultimoDados.regiao || '');
     } else {
       const bid = gradeParaDailyBossId(obterGradeDailyBossPorNivel());
       const dados = getDailyBossCatalog(bid);
       if (dados) {
-        nome = dados.nome;
-        regiao = dados.regiao || '';
+        nome = dailyBossDisplayName(bid, dados.nome);
+        regiao = dailyBossRegionLabel(bid, dados.regiao || '');
       }
     }
     badge.innerText = dailyBossT('game.world.badgeDone');
@@ -345,7 +360,8 @@ function confirmarInicioDailyBoss(): void {
   window.RaidEngine.iniciar(bossId, { modoDiario: true, bots: 0 });
 
   if (typeof window.escreverLog === 'function') {
-    const logLine = dailyBossT('game.dailyBoss.logChallenge', { name: dadosBoss.nome });
+    const bossLabel = dailyBossDisplayName(bossId, dadosBoss.nome);
+    const logLine = dailyBossT('game.dailyBoss.logChallenge', { name: bossLabel });
     window.escreverLog(`<span style="color:#f59e0b; font-weight:bold;">${logLine}</span>`);
   }
 }

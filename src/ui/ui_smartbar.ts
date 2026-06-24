@@ -21,6 +21,30 @@ function smartbarT(key: string, params?: Record<string, string | number>): strin
   return typeof window.t === 'function' ? window.t(key, params) : key;
 }
 
+function hotbarLabel(slotKey: string): string {
+  if (!slotKey) return '';
+  return typeof window.hotbarDisplayName === 'function' ? window.hotbarDisplayName(slotKey) : slotKey;
+}
+
+function resolveSmartbarItemDesc(nome: string, itemData: CatalogRow | undefined): string {
+  if (typeof window.consumableDescText === 'function') {
+    const fromConsumable = window.consumableDescText(nome);
+    if (fromConsumable) return fromConsumable;
+  }
+  if (itemData?.desc) return String(itemData.desc);
+
+  const kAd = window.L2MINI_CURRENCY_BAG_KEYS?.adena || 'Adena';
+  const kAc = window.L2MINI_CURRENCY_BAG_KEYS?.ancient || 'Ancient Coin';
+  if (nome === 'HP Potion') return smartbarT('game.smartbar.itemDesc.hpPotion');
+  if (nome === 'Mana Potion' || nome === 'MP Potion') return smartbarT('game.smartbar.itemDesc.manaPotion');
+  if (nome.includes('Recipe')) return smartbarT('game.smartbar.itemDesc.recipe');
+  if (nome.includes('Ancient Coin') || nome === kAc) return smartbarT('game.smartbar.itemDesc.ancientCoin');
+  if (nome === kAd || nome === 'Adena') return smartbarT('game.smartbar.itemDesc.adena');
+  if (nome.includes('Soulshot')) return smartbarT('game.smartbar.itemDesc.soulshot');
+  if (nome.includes('Spiritshot')) return smartbarT('game.smartbar.itemDesc.spiritshot');
+  return smartbarT('game.smartbar.itemDesc.generic');
+}
+
 function smartbarCatalogRows(includeEquips = false): CatalogRow[] {
   const out: CatalogRow[] = [];
   if (window.catalogoConsumiveis) out.push(...(window.catalogoConsumiveis as CatalogRow[]));
@@ -73,15 +97,8 @@ function abrirAcaoItemGeral(nome: string): void {
   else if (nome === 'Adena') imgItem = 'assets/itens/adena_coin.png';
   else if (nome.includes('Soulshot') || nome.includes('Spiritshot')) imgItem = 'assets/itens/shot_ng.png';
 
-  let textoDesc = itemData?.desc ? String(itemData.desc) : 'A utility item.';
-  if (!itemData) {
-    if (nome.includes('Potion')) textoDesc = 'Magic potion. Use to restore HP or MP in combat.';
-    else if (nome.includes('Recipe')) textoDesc = 'Ancient instructions used to forge powerful gear.';
-    else if (nome.includes('Ancient Coin')) textoDesc = 'Coin from a forgotten empire. Priceless.';
-    else if (nome === 'Adena') textoDesc = 'Common coin of Aden. Used everywhere for trade.';
-    else if (nome.includes('Soulshot')) textoDesc = 'Auto-use: greatly increases physical damage.';
-    else if (nome.includes('Spiritshot')) textoDesc = 'Auto-use: greatly increases magic damage.';
-  }
+  const displayName = hotbarLabel(nome);
+  const textoDesc = resolveSmartbarItemDesc(nome, itemData);
 
   const descricao = `<div style="color:#d4c4a8; font-size:0.85em; font-style:italic; margin-top:8px; border-top:1px dashed #444; padding-top:6px; text-align:center;">"${textoDesc}"</div>`;
 
@@ -95,7 +112,7 @@ function abrirAcaoItemGeral(nome: string): void {
     extraBag = `<div style="color:#94a3b8;font-size:0.78em;margin-top:8px;text-align:center;">${smartbarT('game.smartbar.currencyNoShortcut')}</div>`;
   }
   const owned = window.inventario[nome] ?? 0;
-  desc.innerHTML = `<b style="color:#fff">${nome}</b><br><span style="color:#aaa; font-size:0.9em;">${qtyLabel} ${owned}</span>${descricao}${extraBag}`;
+  desc.innerHTML = `<b style="color:#fff">${displayName}</b><br><span style="color:#aaa; font-size:0.9em;">${qtyLabel} ${owned}</span>${descricao}${extraBag}`;
 
   btnAcao.style.display = 'block';
   if (isCurrency) {
@@ -114,7 +131,7 @@ function abrirAcaoItemGeral(nome: string): void {
       window.abrirSeletorAtalhoGlobal(nome, (index: number) => {
         window.barraAtalhos[index] = nome;
         if (typeof window.escreverLog === 'function') {
-          window.escreverLog(`<span style="color:#10b981;">${smartbarT('game.smartbar.itemPinnedToSlot', { item: nome, slot: String(index + 1) })}</span>`);
+          window.escreverLog(`<span style="color:#10b981;">${smartbarT('game.smartbar.itemPinnedToSlot', { item: hotbarLabel(nome), slot: String(index + 1) })}</span>`);
         }
         renderizarBarraAtalhos();
         if (typeof window.salvarJogo === 'function') window.salvarJogo();
@@ -132,7 +149,7 @@ window.abrirSeletorAtalhoGlobal = function (nomeItem: string, callback: HotbarPi
   if (!modal || !grid || !imgPreview || !nomePreview) return;
 
   imgPreview.src = obterImgItemDinamico(nomeItem);
-  nomePreview.innerText = nomeItem;
+  nomePreview.innerText = hotbarLabel(nomeItem);
 
   grid.innerHTML = '';
   for (let i = 0; i < HOTBAR_SLOT_COUNT; i++) {
@@ -333,6 +350,7 @@ function renderizarBarraAtalhos(): void {
 
       novoHtml += `
                 <div class="shortcut-slot ${classExtra}" style="${styleExtra}"
+                     ${nomeSlot ? `title="${hotbarLabel(nomeSlot).replace(/"/g, '&quot;')}"` : ''}
                      onmousedown="iniciarToqueAtalho(${i})"
                      onmouseup="soltarToqueAtalho(${i})"
                      onmouseleave="cancelarToqueAtalho()"
@@ -375,7 +393,7 @@ function iniciarToqueAtalho(index: number): void {
     if (slotItem && !modoAtalhoItem) {
       if (slotItem.includes('shot')) window.autoShotAtivo = false;
       if (typeof window.escreverLog === 'function') {
-        window.escreverLog(`<span style="color:#ef4444;">${smartbarT('game.smartbar.removedFromSlot', { item: slotItem, slot: String(index + 1) })}</span>`);
+        window.escreverLog(`<span style="color:#ef4444;">${smartbarT('game.smartbar.removedFromSlot', { item: hotbarLabel(slotItem), slot: String(index + 1) })}</span>`);
       }
       window.barraAtalhos[index] = null;
       renderizarBarraAtalhos();
@@ -390,7 +408,7 @@ function executarSkillNaRaid(nomeSlot: string, skill: SkillCatalogEntry): void {
   if (window.cooldownsAtivos[nomeSlot] && window.cooldownsAtivos[nomeSlot] > agora) return;
   if (window.playerMP < (skill.mp || 0)) {
     if (typeof window.escreverLog === 'function') {
-      window.escreverLog(`<span style="color:#3b82f6; font-size:10px;">${smartbarT('game.smartbar.insufficientMp', { skill: nomeSlot })}</span>`);
+      window.escreverLog(`<span style="color:#3b82f6; font-size:10px;">${smartbarT('game.smartbar.insufficientMp', { skill: hotbarLabel(nomeSlot) })}</span>`);
     }
     return;
   }
@@ -399,7 +417,7 @@ function executarSkillNaRaid(nomeSlot: string, skill: SkillCatalogEntry): void {
   if (typeof window.atualizar === 'function') window.atualizar();
   window.dispararAnimacaoCooldown(nomeSlot, skill.cd || 1000);
   if (typeof window.escreverLog === 'function') {
-    window.escreverLog(`<span style="color:${skill.cor || '#fff'}; font-weight:bold;">${smartbarT('game.smartbar.youCast', { skill: nomeSlot })}</span>`);
+    window.escreverLog(`<span style="color:${skill.cor || '#fff'}; font-weight:bold;">${smartbarT('game.smartbar.youCast', { skill: hotbarLabel(nomeSlot) })}</span>`);
   }
 
   const raid = window.RaidEngine;
@@ -480,7 +498,7 @@ function soltarToqueAtalho(index: number): void {
 
           if (qtdAtual <= 0 && !nomeSlot.includes('shot')) {
             if (typeof window.escreverLog === 'function') {
-              window.escreverLog(`<span style="color:#ef4444; font-weight:bold; font-size:0.9em;">${smartbarT('game.smartbar.emptyStock', { item: nomeSlot })}</span>`);
+              window.escreverLog(`<span style="color:#ef4444; font-weight:bold; font-size:0.9em;">${smartbarT('game.smartbar.emptyStock', { item: hotbarLabel(nomeSlot) })}</span>`);
             }
             return;
           }

@@ -87,6 +87,9 @@ declare global {
     formatMobCardName?: (mob: { idImg?: string; nome?: string; isChampion?: boolean }) => string;
     itemDropDisplayName?: (itemKey: string) => string;
     consumableDisplayName?: (itemKey: string) => string;
+    consumableDescText?: (itemKey: string) => string;
+    dailyBossRegionDisplay?: (bossId: string | undefined, fallback?: string) => string;
+    hotbarDisplayName?: (slotKey: string) => string;
     bossDisplayName?: (bossId: string | undefined, fallback?: string) => string;
     bossShortName?: (bossId: string | undefined, fallback?: string) => string;
     raidBossLogMsg?: (bossId: string | undefined, logKey: string, params?: Record<string, string | number>) => string;
@@ -528,6 +531,9 @@ declare global {
   function formatMobCardName(mob: { idImg?: string; nome?: string; isChampion?: boolean }): string;
   function itemDropDisplayName(itemKey: string): string;
   function consumableDisplayName(itemKey: string): string;
+  function consumableDescText(itemKey: string): string;
+  function dailyBossRegionDisplay(bossId: string | undefined, fallback?: string): string;
+  function hotbarDisplayName(slotKey: string): string;
   function bossDisplayName(bossId: string | undefined, fallback?: string): string;
   function bossShortName(bossId: string | undefined, fallback?: string): string;
   function raidBossLogMsg(bossId: string | undefined, logKey: string, params?: Record<string, string | number>): string;
