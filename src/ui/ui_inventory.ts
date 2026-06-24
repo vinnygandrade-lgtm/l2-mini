@@ -1362,10 +1362,16 @@ function equiparItemSeguro(indexNaBolsa: number): void {
     if (itemAntigoRemovido) {
         window.InventoryManager.adicionarEquipamento(itemAntigoRemovido);
         const nomeAntigo = String((itemAntigoRemovido.base as ItemCatalogBase)?.nome || itemAntigoRemovido.nome || 'item');
-        window.escreverLog(`<span style="color:#aaa;">Guardou ${nomeAntigo}.</span>`);
+        const storedMsg = (typeof window.t === 'function')
+            ? window.t('game.inventoryUi.logStored', { item: nomeAntigo })
+            : `Stored ${nomeAntigo}.`;
+        window.escreverLog(`<span style="color:#aaa;">${storedMsg}</span>`);
     }
     const nomeNovo = String((itemNovo.base as ItemCatalogBase)?.nome || itemNovo.nome || 'item');
-    window.escreverLog(`<span style="color:#facc15; font-weight:bold;">Equipou ${nomeNovo}.</span>`);
+    const equippedMsg = (typeof window.t === 'function')
+        ? window.t('game.inventoryUi.logEquipped', { item: nomeNovo })
+        : `Equipped ${nomeNovo}.`;
+    window.escreverLog(`<span style="color:#facc15; font-weight:bold;">${equippedMsg}</span>`);
     if (typeof window.calcularStatusGlobais === 'function') window.calcularStatusGlobais();
     if (typeof window.atualizar === 'function') window.atualizar();
     if (typeof window.salvarJogo === 'function') window.salvarJogo();

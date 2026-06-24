@@ -320,7 +320,7 @@ function usarPocao(): void {
     const olyArena = document.getElementById('tela-olympiad-arena');
     if (typeof window.OlympiadEngine !== 'undefined' && olyArena?.style.display === 'flex') {
         if (!window.OlympiadEngine.ativo) {
-            escreverLog(`<span style="color:#facc15;">Potions are locked until the fight starts!</span>`);
+            escreverLog(`<span style="color:#facc15;">${typeof window.t === 'function' ? window.t('game.core.potionsLocked') : 'Potions are locked until the fight starts!'}</span>`);
             return;
         }
     }
@@ -346,7 +346,7 @@ function usarPocaoMP(nomeDaPocao: string): void {
     const olyArena = document.getElementById('tela-olympiad-arena');
     if (typeof window.OlympiadEngine !== 'undefined' && olyArena?.style.display === 'flex') {
         if (!window.OlympiadEngine.ativo) {
-            escreverLog(`<span style="color:#facc15;">Potions are locked until the fight starts!</span>`);
+            escreverLog(`<span style="color:#facc15;">${typeof window.t === 'function' ? window.t('game.core.potionsLocked') : 'Potions are locked until the fight starts!'}</span>`);
             return;
         }
     }

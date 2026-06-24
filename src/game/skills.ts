@@ -723,7 +723,13 @@ window.mostrarSeletorSlot = function() {
 
     abrirSeletorAtalhoGlobal(skillSelecionadaSpellbook.idNome, (index) => {
         barraAtalhos[index] = skillSelecionadaSpellbook!.idNome;
-        escreverLog(`<span style="color:#10b981;">Habilidade [${skillSelecionadaSpellbook!.idNome}] equipada no slot ${index + 1}!</span>`);
+        const logLine = (typeof window.t === 'function')
+            ? window.t('game.spellbook.skillAssignedToSlot', {
+                skill: skillSelecionadaSpellbook!.idNome,
+                slot: index + 1,
+            })
+            : `Skill [${skillSelecionadaSpellbook!.idNome}] assigned to slot ${index + 1}!`;
+        escreverLog(`<span style="color:#10b981;">${logLine}</span>`);
         renderizarBarraAtalhos();
         if(typeof salvarJogo === 'function') salvarJogo();
         window.fecharSpellbook();
@@ -740,8 +746,14 @@ window.equiparSkillNaBarra = function(indexSlot: number) {
 
     barraAtalhos[indexSlot] = skillSelecionadaSpellbook.idNome;
     
-    if(typeof tocarSom === 'function') tocarSom('enchant'); 
-    escreverLog(`<span style="color:#10b981;">Habilidade [${skillSelecionadaSpellbook.idNome}] equipada no slot ${indexSlot + 1}!</span>`);
+    if(typeof tocarSom === 'function') tocarSom('enchant');
+    const logLine = (typeof window.t === 'function')
+        ? window.t('game.spellbook.skillAssignedToSlot', {
+            skill: skillSelecionadaSpellbook.idNome,
+            slot: indexSlot + 1,
+        })
+        : `Skill [${skillSelecionadaSpellbook.idNome}] assigned to slot ${indexSlot + 1}!`;
+    escreverLog(`<span style="color:#10b981;">${logLine}</span>`);
     
     if (typeof renderizarBarraAtalhos === 'function') renderizarBarraAtalhos();
     if(typeof salvarJogo === 'function') salvarJogo();

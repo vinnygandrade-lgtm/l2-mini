@@ -298,7 +298,10 @@ function iniciarVidaMundialClans() {
                     clan.membros = clan.membros.filter(m => m !== membroNome);
                     // Se o player for o líder, avisa via log
                     if (clan.id === window.playerClanId && clan.lider === window.charName) {
-                        window.escreverLog(`<span style="color:#ef4444;">[Clan] ${membroNome} has left your clan seeking better opportunities.</span>`);
+                        const leftMsg = (typeof window.t === 'function')
+                            ? window.t('game.clan.memberLeftSeeking', { name: membroNome })
+                            : `[Clan] ${membroNome} has left your clan seeking better opportunities.`;
+                        window.escreverLog(`<span style="color:#ef4444;">${leftMsg}</span>`);
                     }
                     console.log(`[ClanEngine] ${membroNome} saiu do clã ${clan.nome}`);
                 }

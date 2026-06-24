@@ -659,6 +659,7 @@
                     applicationPending: 'Application already pending!',
                     applicationSent: 'Application sent to [{tag}] {name}!',
                     memberJoined: '{name} has joined the clan!',
+                    memberLeftSeeking: '[Clan] {name} has left your clan seeking better opportunities.',
                     memberExpelled: '{name} has been expelled.',
                     noFreelanceBots: 'No freelance bots available right now!',
                     botJoined: '{name} joined your clan!',
@@ -904,6 +905,7 @@
                     effectPctMp: 'Restores ~{n}% max MP',
                     learnLevel: 'Learned from class progression (available from level {lvl})',
                     assignBar: 'ASSIGN TO SHORTCUT BAR',
+                    skillAssignedToSlot: 'Skill [{skill}] assigned to slot {slot}!',
                     close: 'CLOSE',
                     type: {
                         basico: 'Basic',
@@ -1052,6 +1054,7 @@
                     drankManaPotion: '🧪 You used a {potion}. Mana is recovering...',
                     manaPotionEffectEnd: 'The Mana Potion effect has worn off.',
                     noManaPotions: 'You have no Mana Potions!',
+                    potionsLocked: 'Potions are locked until the fight starts!',
                     unknownPlayer: 'Unknown Player',
                     buffMightHaste: 'Might/Haste:',
                     buffEmpowerAcumen: 'Empower/Acumen:'
@@ -1256,6 +1259,8 @@
                     selectJewelTitle: 'SELECT JEWELRY',
                     noJewelInBag: 'No matching jewelry in your inventory.',
                     equipFailed: 'Could not equip this item.',
+                    logStored: 'Stored {item}.',
+                    logEquipped: 'Equipped {item}.',
                     equipBlockedButton: 'REQUIRES LV. {level}',
                     slotLockedTitle: '[{grade}] Requires level {level} (your level: {yours})',
                     filter: {
@@ -2442,6 +2447,7 @@
                     applicationPending: 'Pedido já pendente!',
                     applicationSent: 'Pedido enviado para [{tag}] {name}!',
                     memberJoined: '{name} entrou no clã!',
+                    memberLeftSeeking: '[Clã] {name} saiu do seu clã em busca de melhores oportunidades.',
                     memberExpelled: '{name} foi expulso.',
                     noFreelanceBots: 'Nenhum mercenário disponível no momento!',
                     botJoined: '{name} entrou no seu clã!',
@@ -2687,6 +2693,7 @@
                     effectPctMp: 'Restaura ~{n}% do MP máx.',
                     learnLevel: 'Desbloqueio no progresso da classe (nível {lvl}+)',
                     assignBar: 'COLOCAR NA BARRA DE ATALHOS',
+                    skillAssignedToSlot: 'Habilidade [{skill}] equipada no slot {slot}!',
                     close: 'FECHAR',
                     type: {
                         basico: 'Básico',
@@ -2835,6 +2842,7 @@
                     drankManaPotion: '🧪 Você usou {potion}. Mana recuperando...',
                     manaPotionEffectEnd: 'O efeito da Poção de Mana acabou.',
                     noManaPotions: 'Você não tem Poções de Mana!',
+                    potionsLocked: 'Poções bloqueadas até a luta começar!',
                     unknownPlayer: 'Jogador desconhecido',
                     buffMightHaste: 'Might/Haste:',
                     buffEmpowerAcumen: 'Empower/Acumen:'
@@ -3039,6 +3047,8 @@
                     selectJewelTitle: 'ESCOLHER JOIA',
                     noJewelInBag: 'Não há joias desse tipo na bolsa.',
                     equipFailed: 'Não foi possível equipar este item.',
+                    logStored: 'Guardou {item}.',
+                    logEquipped: 'Equipou {item}.',
                     equipBlockedButton: 'EXIGE NV. {level}',
                     slotLockedTitle: '[{grade}] Exige nível {level} (seu nível: {yours})',
                     filter: {
