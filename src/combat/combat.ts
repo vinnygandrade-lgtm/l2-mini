@@ -3,6 +3,7 @@
  * Migrado: js/combat.js
  */
 import type { ZonalMobTuneEntry } from '../types/game';
+import { formatMobCardName, itemDropDisplayName, mobDisplayName } from './combat_i18n';
 
 interface ForestMob {
   idUnico?: string;
@@ -199,9 +200,10 @@ function spawnMonstros() {
         let multHP = isChampion ? champHpMult : 1;
         let multAtk = isChampion ? champAtkMult : 1;
         const champLabel = (typeof window.t === 'function') ? window.t('game.combat.championTag') : 'CHAMPION';
-        let nomeFinal = isChampion ? `<span style="color:gold; text-shadow: 0 0 5px orange;">[${champLabel}]</span> ${mobEscolhido.nome}` : mobEscolhido.nome;
+        const plainName = mobDisplayName(mobEscolhido.idImg, mobEscolhido.nome);
+        let nomeFinal = plainName;
 
-        nomesSorteados.push(isChampion ? `${champLabel} ${mobEscolhido.nome}` : mobEscolhido.nome);
+        nomesSorteados.push(isChampion ? `${champLabel} ${plainName}` : plainName);
         
         const baseHpMax = Math.max(1, Math.floor(Number(mobEscolhido.hpMax) * thp || 1));
         const instMaxHp = Math.max(1, Math.floor(baseHpMax * multHP));
@@ -264,7 +266,7 @@ function renderizarMonstros() {
         htmlFinal += `
         <div id="mob-card-${mob.idUnico}" style="display:flex; flex-direction:column; align-items:center; flex: 1 1 18%; min-width: 60px; max-width: 90px;">
             <div style="width: 100%; margin-bottom: 5px; text-align:center;">
-                <div style="color: #ffcc00; font-size: 0.55em; font-weight: bold; text-shadow: 1px 1px 0 #000; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${mob.nome}${marker}</div>
+                <div style="color: #ffcc00; font-size: 0.55em; font-weight: bold; text-shadow: 1px 1px 0 #000; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${formatMobCardName(mob)}${marker}</div>
                 <div style="width: 100%; background: #222; height: 3px; border-radius: 2px; overflow: hidden; border: 1px solid #444;">
                     <div id="mob-cd-fill-${mob.idUnico}" style="background: #ef4444; width: ${mob.progresso}%; height: 100%;"></div>
                 </div>
@@ -518,7 +520,7 @@ function processarMorteMonstro(index: number, mobRef?: ForestMob | null) {
                     let qtd = data.ancient_coins;
                     lootTurno.drops["Ancient Coin"] = (lootTurno.drops["Ancient Coin"] || 0) + qtd;
                     if(typeof escreverLog === 'function') {
-                        window.escreverLog(`<span style="color:#a855f7; font-weight:bold; text-shadow: 1px 1px 0 #000;">${(typeof window.t === 'function') ? window.t('game.combat.rareDrop', { qty: qtd, item: "Ancient Coin" }) : ('💎 RARE DROP! You found ' + qtd + '× Ancient Coin!')}</span>`);
+                        window.escreverLog(`<span style="color:#a855f7; font-weight:bold; text-shadow: 1px 1px 0 #000;">${(typeof window.t === 'function') ? window.t('game.combat.rareDrop', { qty: qtd, item: itemDropDisplayName('Ancient Coin') }) : ('💎 RARE DROP! You found ' + qtd + '× Ancient Coin!')}</span>`);
                     }
                     if(typeof tocarSom === 'function') tocarSom('enchant');
                 }
@@ -527,7 +529,7 @@ function processarMorteMonstro(index: number, mobRef?: ForestMob | null) {
                     let rec = data.recipe_dropped;
                     lootTurno.drops[rec] = (lootTurno.drops[rec] || 0) + 1;
                     if(typeof escreverLog === 'function') {
-                        window.escreverLog(`<span style="color:#f97316; font-weight:bold; text-shadow: 1px 1px 2px #000;">${(typeof window.t === 'function') ? window.t('game.combat.legendaryDrop', { item: rec }) : ('🔥 LEGENDARY DROP: ' + rec + '!')}</span>`);
+                        window.escreverLog(`<span style="color:#f97316; font-weight:bold; text-shadow: 1px 1px 2px #000;">${(typeof window.t === 'function') ? window.t('game.combat.legendaryDrop', { item: itemDropDisplayName(rec) }) : ('🔥 LEGENDARY DROP: ' + rec + '!')}</span>`);
                     }
                     if(typeof tocarSom === 'function') tocarSom('lvlup');
                 }
@@ -549,7 +551,7 @@ function processarMorteMonstro(index: number, mobRef?: ForestMob | null) {
             let qtdMoeda = mobMorto.isChampion ? (baseCoins * 2) : baseCoins; 
             lootTurno.drops["Ancient Coin"] = (lootTurno.drops["Ancient Coin"] || 0) + qtdMoeda;
             
-            if(typeof escreverLog === 'function') window.escreverLog(`<span style="color:#a855f7; font-weight:bold; text-shadow: 1px 1px 0 #000;">${(typeof window.t === 'function') ? window.t('game.combat.rareDrop', { qty: qtdMoeda, item: "Ancient Coin" }) : ('💎 RARE DROP! You found ' + qtdMoeda + '× Ancient Coin!')}</span>`);
+            if(typeof escreverLog === 'function') window.escreverLog(`<span style="color:#a855f7; font-weight:bold; text-shadow: 1px 1px 0 #000;">${(typeof window.t === 'function') ? window.t('game.combat.rareDrop', { qty: qtdMoeda, item: itemDropDisplayName('Ancient Coin') }) : ('💎 RARE DROP! You found ' + qtdMoeda + '× Ancient Coin!')}</span>`);
             if(typeof tocarSom === 'function') tocarSom('enchant'); 
         }
 
@@ -560,7 +562,7 @@ function processarMorteMonstro(index: number, mobRef?: ForestMob | null) {
                 let listaRecs = ['Recipe: Vesper Noble Heavy', 'Recipe: Vesper Noble Light', 'Recipe: Vesper Noble Robe', 'Recipe: Vesper Weapon', 'Recipe: Vesper Jewel'];
                 let recSorteada = listaRecs[Math.floor(Math.random() * listaRecs.length)];
                 lootTurno.drops[recSorteada] = (lootTurno.drops[recSorteada] || 0) + 1;
-                if(typeof escreverLog === 'function') window.escreverLog(`<span style="color:#f97316; font-weight:bold; text-shadow: 1px 1px 2px #000;">${(typeof window.t === 'function') ? window.t('game.combat.legendaryDrop', { item: recSorteada }) : ('🔥 LEGENDARY DROP: ' + recSorteada + '!')}</span>`);
+                if(typeof escreverLog === 'function') window.escreverLog(`<span style="color:#f97316; font-weight:bold; text-shadow: 1px 1px 2px #000;">${(typeof window.t === 'function') ? window.t('game.combat.legendaryDrop', { item: itemDropDisplayName(recSorteada) }) : ('🔥 LEGENDARY DROP: ' + recSorteada + '!')}</span>`);
                 if(typeof tocarSom === 'function') tocarSom('lvlup');
             }
         }
@@ -644,7 +646,7 @@ function mostrarResumoVitoria() {
     const labXp = (typeof window.t === 'function') ? window.t('game.combat.victoryXp') : 'XP:';
     const labDrops = (typeof window.t === 'function') ? window.t('game.combat.victoryDrops') : 'Drops:';
     let htmlLoot = `<div style="display:flex; justify-content:space-between;"><span>${labAdena}</span> <b style="color:#ffcc00;">+${lootTurno.adenas}</b></div><div style="display:flex; justify-content:space-between;"><span>${labXp}</span> <b style="color:#10b981;">+${lootTurno.xp}</b></div><hr style="border:0.5px solid #444; margin:5px 0;"><div style="color:#a855f7; font-weight:bold;">${labDrops}</div>`;
-    for (let item in lootTurno.drops) { htmlLoot += `<div style="display:flex; justify-content:space-between;"><span>${item}:</span> <b>x${lootTurno.drops[item]}</b></div>`; }
+    for (let item in lootTurno.drops) { htmlLoot += `<div style="display:flex; justify-content:space-between;"><span>${itemDropDisplayName(item)}:</span> <b>x${lootTurno.drops[item]}</b></div>`; }
     containerLoot.innerHTML = htmlLoot;
     travarFlorestaResumoVitoria(true);
     abrirModal('janela-vitoria', 1500);

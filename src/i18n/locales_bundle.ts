@@ -1010,6 +1010,7 @@
                     championTag: 'CHAMPION',
                     ambush: 'AMBUSH! {list} appeared!',
                     searchingTracks: 'Searching for tracks in the zone...',
+                    noTarget: 'No target to attack!',
                     rareDrop: '💎 RARE DROP! You found {qty}× {item}!',
                     legendaryDrop: '🔥 LEGENDARY DROP: {item}!',
                     monsterDefeated: 'The monster was defeated!',
@@ -1021,11 +1022,53 @@
                     victoryDrops: 'Drops:',
                     fleeing: 'Trying to escape...',
                     escaped: 'You got away safely!',
-                    escapeFailed: 'Escape failed!'
+                    escapeFailed: 'Escape failed!',
+                    recipes: {
+                        vesperNobleHeavy: 'Recipe: Vesper Noble Heavy',
+                        vesperNobleLight: 'Recipe: Vesper Noble Light',
+                        vesperNobleRobe: 'Recipe: Vesper Noble Robe',
+                        vesperWeapon: 'Recipe: Vesper Weapon',
+                        vesperJewel: 'Recipe: Vesper Jewel'
+                    }
+                },
+                mobs: {
+                    spider: 'Giant Spider',
+                    wolf: 'Wolf',
+                    goblin: 'Goblin',
+                    zombie: 'Zombie Soldier',
+                    skeleton: 'Skeleton Archer',
+                    bat: 'Ruin Bat',
+                    fettered_soul: 'Fettered Soul',
+                    leto_lizardman: 'Leto Lizardman',
+                    wyrm: 'Wyrm',
+                    cave_beast: 'Cave Beast',
+                    malruk_soldier: 'Malruk Soldier',
+                    bloody_queen: 'Bloody Queen',
+                    doom_knight: 'Doom Knight',
+                    platinum_guardian: 'Platinum Guardian',
+                    guardian_angel: 'Guardian Angel',
+                    undead_knight: 'Undead Knight',
+                    imperial_guard: 'Imperial Guard',
+                    tomb_banshee: 'Tomb Banshee'
+                },
+                items: {
+                    drop: {
+                        ancientCoin: 'Ancient Coin',
+                        animalSkin: 'Animal Skin',
+                        animalBone: 'Animal Bone',
+                        coal: 'Coal',
+                        charcoal: 'Charcoal',
+                        ironOre: 'Iron Ore'
+                    }
                 },
                 combatMath: {
                     playerDefeated: '💀 YOU were defeated! Returning...',
-                    dodgePerfect: '💨 You dodged the attack perfectly!'
+                    dodgePerfect: '💨 You dodged the attack perfectly!',
+                    autoAttackOn: '⚔️ Auto-Attack: ON',
+                    autoAttackOff: '🛑 Auto-Attack: OFF',
+                    shotsDepleted: '{item} depleted!',
+                    criticalHit: 'CRITICAL HIT! {damage}',
+                    damageDealt: 'You dealt {damage} damage!'
                 },
                 raid: {
                     youDied: 'YOU DIED! The boss won the battle.',
@@ -2676,6 +2719,7 @@
                     championTag: 'CAMPEÃO',
                     ambush: 'EMBOSCADA! {list} apareceram!',
                     searchingTracks: 'Procurando rastros na zona...',
+                    noTarget: 'Nenhum alvo para atacar!',
                     rareDrop: '💎 DROP RARO! Você encontrou {qty}× {item}!',
                     legendaryDrop: '🔥 DROP LENDÁRIO: {item}!',
                     monsterDefeated: 'O monstro foi derrotado!',
@@ -2687,11 +2731,53 @@
                     victoryDrops: 'Drops:',
                     fleeing: 'Tentando fugir...',
                     escaped: 'Você fugiu com segurança!',
-                    escapeFailed: 'Fuga falhou!'
+                    escapeFailed: 'Fuga falhou!',
+                    recipes: {
+                        vesperNobleHeavy: 'Receita: Vesper Noble Heavy',
+                        vesperNobleLight: 'Receita: Vesper Noble Light',
+                        vesperNobleRobe: 'Receita: Vesper Noble Robe',
+                        vesperWeapon: 'Receita: Vesper Weapon',
+                        vesperJewel: 'Receita: Vesper Jewel'
+                    }
+                },
+                mobs: {
+                    spider: 'Aranha Gigante',
+                    wolf: 'Lobo',
+                    goblin: 'Goblin',
+                    zombie: 'Soldado Zumbi',
+                    skeleton: 'Arqueiro Esqueleto',
+                    bat: 'Morcego das Ruínas',
+                    fettered_soul: 'Alma Acorrentada',
+                    leto_lizardman: 'Homem-lagarto Leto',
+                    wyrm: 'Wyrm',
+                    cave_beast: 'Fera da Caverna',
+                    malruk_soldier: 'Soldado Malruk',
+                    bloody_queen: 'Rainha Sangrenta',
+                    doom_knight: 'Cavaleiro da Perdição',
+                    platinum_guardian: 'Guardião Platinum',
+                    guardian_angel: 'Anjo Guardião',
+                    undead_knight: 'Cavaleiro Morto-vivo',
+                    imperial_guard: 'Guarda Imperial',
+                    tomb_banshee: 'Banshee do Túmulo'
+                },
+                items: {
+                    drop: {
+                        ancientCoin: 'Moeda ancestral',
+                        animalSkin: 'Pele de animal',
+                        animalBone: 'Osso de animal',
+                        coal: 'Carvão',
+                        charcoal: 'Carvão vegetal',
+                        ironOre: 'Minério de ferro'
+                    }
                 },
                 combatMath: {
                     playerDefeated: '💀 Você foi derrotado! Voltando...',
-                    dodgePerfect: '💨 Você esquivou o ataque perfeitamente!'
+                    dodgePerfect: '💨 Você esquivou o ataque perfeitamente!',
+                    autoAttackOn: '⚔️ Auto-ataque: LIGADO',
+                    autoAttackOff: '🛑 Auto-ataque: DESLIGADO',
+                    shotsDepleted: '{item} acabaram!',
+                    criticalHit: 'CRÍTICO! {damage}',
+                    damageDealt: 'Você causou {damage} de dano!'
                 },
                 raid: {
                     youDied: 'VOCÊ MORREU! O boss venceu a batalha.',

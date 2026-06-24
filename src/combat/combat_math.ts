@@ -287,10 +287,18 @@ window.atacar = function () {
   window.autoAtaqueAtivo = !window.autoAtaqueAtivo;
   if (typeof renderizarBarraAtalhos === 'function') renderizarBarraAtalhos();
   if (window.autoAtaqueAtivo) {
-    escreverLog(`<span style="color:#10b981; font-weight:bold;">⚔️ Auto-Ataque: LIGADO</span>`);
+    escreverLog(
+      `<span style="color:#10b981; font-weight:bold;">${
+        typeof window.t === 'function' ? window.t('game.combatMath.autoAttackOn') : '⚔️ Auto-Attack: ON'
+      }</span>`,
+    );
     realizarGolpeAutoAtaque();
   } else {
-    escreverLog(`<span style="color:#ef4444; font-weight:bold;">🛑 Auto-Ataque: DESLIGADO</span>`);
+    escreverLog(
+      `<span style="color:#ef4444; font-weight:bold;">${
+        typeof window.t === 'function' ? window.t('game.combatMath.autoAttackOff') : '🛑 Auto-Attack: OFF'
+      }</span>`,
+    );
     if (loopAutoAtaque) clearTimeout(loopAutoAtaque);
     loopAutoAtaque = null;
   }
@@ -369,7 +377,13 @@ function realizarGolpeAutoAtaque() {
       if (typeof renderizarBarraAtalhos === 'function') renderizarBarraAtalhos();
       if (window.inventario[shot] <= 0) {
         window.autoShotAtivo = false;
-        escreverLog(`<span style="color:#ef4444; font-weight:bold;">${shot} acabaram!</span>`);
+        escreverLog(
+          `<span style="color:#ef4444; font-weight:bold;">${
+            typeof window.t === 'function'
+              ? window.t('game.combatMath.shotsDepleted', { item: shot })
+              : `${shot} depleted!`
+          }</span>`,
+        );
       }
     } else {
       window.autoShotAtivo = false;
@@ -377,8 +391,14 @@ function realizarGolpeAutoAtaque() {
   }
   escreverLog(
     foiCritico
-      ? `<span style="color:#ff3333; font-weight:bold;">CRITICAL HIT! ${danoFinal}</span>`
-      : `You dealt <span style="color:white">${danoFinal}</span> damage!`,
+      ? `<span style="color:#ff3333; font-weight:bold;">${
+          typeof window.t === 'function'
+            ? window.t('game.combatMath.criticalHit', { damage: danoFinal })
+            : `CRITICAL HIT! ${danoFinal}`
+        }</span>`
+      : typeof window.t === 'function'
+        ? window.t('game.combatMath.damageDealt', { damage: danoFinal })
+        : `You dealt <span style="color:white">${danoFinal}</span> damage!`,
   );
 
   if (typeof window.TutorialEngine !== 'undefined' && window.TutorialEngine.isRunning?.()) {

@@ -192,6 +192,13 @@ import type { I18nLocaleTree, I18nParams, I18nSetLocaleOptions, UiLocale } from 
         /* ignore */
       }
     }
+    if (typeof window.refreshForestMobNames === 'function') {
+      try {
+        window.refreshForestMobNames();
+      } catch {
+        /* ignore */
+      }
+    }
     if (typeof window.TutorialEngine !== 'undefined' && typeof window.TutorialEngine.render === 'function') {
       try {
         window.TutorialEngine.render();
@@ -246,6 +253,13 @@ import type { I18nLocaleTree, I18nParams, I18nSetLocaleOptions, UiLocale } from 
     if (typeof window.refreshHuntZoneHud === 'function') {
       try {
         window.refreshHuntZoneHud();
+      } catch {
+        /* ignore */
+      }
+    }
+    if (typeof window.refreshForestMobNames === 'function') {
+      try {
+        window.refreshForestMobNames();
       } catch {
         /* ignore */
       }

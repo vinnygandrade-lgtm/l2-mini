@@ -82,6 +82,10 @@ declare global {
     zoneDisplayName?: (grade: string | null | undefined) => string;
     zoneCanonicalName?: (grade: string) => string;
     refreshHuntZoneHud?: () => void;
+    refreshForestMobNames?: () => void;
+    mobDisplayName?: (idImg: string | undefined, fallback?: string) => string;
+    formatMobCardName?: (mob: { idImg?: string; nome?: string; isChampion?: boolean }) => string;
+    itemDropDisplayName?: (itemKey: string) => string;
     recolherLootRaid?: () => void;
     abrirPerfilJogadorRanking?: (nome: string, isBot?: boolean) => void;
     renderizarSocial?: () => void;
@@ -512,7 +516,10 @@ declare global {
   function setMarketRegMaxQtd(): void;
   function filtrarHistorico(tipo: string): void;
   function refreshMarketUiI18n(): void;
-  function refreshHuntZoneHud(): void;
+  function refreshForestMobNames(): void;
+  function mobDisplayName(idImg: string | undefined, fallback?: string): string;
+  function formatMobCardName(mob: { idImg?: string; nome?: string; isChampion?: boolean }): string;
+  function itemDropDisplayName(itemKey: string): string;
   function zoneDisplayName(grade: string | null | undefined): string;
   function zoneCanonicalName(grade: string): string;
   function fecharJanelaAcao(): void;
