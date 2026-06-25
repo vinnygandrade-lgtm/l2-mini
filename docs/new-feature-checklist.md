@@ -75,7 +75,7 @@ Use esta lista **antes de abrir PR** ou quando pedires ao agente uma feature nov
 
 ## 7. i18n e identidade
 
-- [ ] `node --check src/i18n/locales_bundle.ts` → exit **0**.
+- [ ] `npm run check:i18n` → exit **0**.
 - [ ] Nomes próprios de mundo **originais** (**§11**); IDs técnicos estáveis no save.
 - [ ] Ícones novos: **256×256** PNG quadrado (**§11.3**).
 

@@ -69,7 +69,7 @@ Marcar ✅ após validar no browser (dev local ou deploy). Repetir antes de merg
 
 ### Regressões conhecidas a vigiar
 
-- [ ] UI mostra chaves `login.*` / `game.*` (bundle i18n partido → `node --check src/i18n/locales_bundle.ts`)
+- [ ] UI mostra chaves `login.*` / `game.*` (bundle i18n partido → `npm run check:i18n`)
 - [ ] Véu escuro órfão ao mudar aba (`fecharTodosModaisBackdropStack`)
 - [ ] Modal cortado dentro de `#screen-game` (modais devem estar no `body`)
 
@@ -180,7 +180,7 @@ Ondas finais migradas para `src/`:
 | `src/i18n/i18n.ts`, `locales_bundle.ts` | `js/i18n/*.js` |
 | `src/systems/castle_engine.ts` … `ranking_seasons.ts` | `js/systems/*.js` |
 
-Validação i18n após editar strings: `node --check src/i18n/locales_bundle.ts`
+Validação i18n após editar strings: `npm run check:i18n`
 
 ## Fase 4 — Tipos reais (concluída)
 

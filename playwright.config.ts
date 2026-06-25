@@ -23,18 +23,11 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
   ],
-  webServer: process.env.CI
-    ? {
-        // test:ci already runs build; preview only avoids a duplicate build in CI.
-        command: 'npm run preview -- --port 4173 --strictPort',
-        url: BASE_URL,
-        reuseExistingServer: false,
-        timeout: 120_000,
-      }
-    : {
-        command: 'npm run dev:e2e',
-        url: BASE_URL,
-        reuseExistingServer: !process.env.CI,
-        timeout: 120_000,
-      },
+  webServer: {
+    // Smoke runs on Vite dev (reliable boot). test:ci still runs `vite build` separately.
+    command: 'npm run dev:e2e',
+    url: BASE_URL,
+    reuseExistingServer: !process.env.CI,
+    timeout: 120_000,
+  },
 });

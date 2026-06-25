@@ -39,7 +39,7 @@ alwaysApply: true
 
 ## Integridade sintática de `locales_bundle.ts` (crítico)
 - O ficheiro é um **único objeto literal** (`window.I18N_LOCALES = { en: { … }, 'pt-BR': { … } };`) dentro de um IIFE. **Cada grupo de chaves** (ex.: `game.castle.*`, `game.clan.rpc.*`) deve estar dentro do **bloco pai explícito** (`castle: { … }`, `rpc: { … }`). **Proibido** deixar propriedades “soltas” ao mesmo nível de indentação que parecem continuar um ramo mas **não** têm `pai: {` — isso fecha o `game` ou o `en` no sítio errado, **parte o JavaScript** (erro perto de `'pt-BR'` no parse) e o browser **não carrega o bundle**: sintoma = **toda a UI mostra chaves literais** (`login.subtitle`, `game.multiplayer.offline`, …) porque `I18n.init()` corre com `I18N_LOCALES` vazio/incompleto.
-- **Validação obrigatória** após editar o bundle: `node --check src/i18n/locales_bundle.ts` (exit code 0). Preferir correr antes de commit quando se toca neste ficheiro.
+- **Validação obrigatória** após editar o bundle: `npm run check:i18n` (exit code 0). Preferir correr antes de commit quando se toca neste ficheiro.
 - Ao adicionar strings num sub-ramo grande (`game.*`), **espelhar a mesma árvore** em **en** e **pt-BR**; um dos dois com `castle:` e o outro sem é convite a regressão estrutural — comparar secções lado a lado.
 
 ## Alinhamento com o GDD
