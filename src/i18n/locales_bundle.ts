@@ -2,6 +2,7 @@
 /* Locale trees: add keys in BOTH en + pt-BR   */
 /* ========================================== */
 import { mergeSkillCatalogIntoLocales } from './skill_catalog_i18n';
+import { mergePolish12CatalogIntoLocales } from './polish12_catalog_i18n';
 
 (function () {
     'use strict';
@@ -519,6 +520,13 @@ import { mergeSkillCatalogIntoLocales } from './skill_catalog_i18n';
                     needMaterials: 'NEED MATERIALS',
                     emptyCategory: 'No recipes available in this category.',
                     selectRecipeHint: 'Select a recipe from the grid above.',
+                    windowTitle: 'DWARVEN CRAFTING',
+                    tabSpecial: '🌟 SPECIAL',
+                    tabMats: '📦 MATERIALS',
+                    recipeRequirements: 'Recipe Requirements',
+                    selectRecipeBlank: 'Select a recipe.',
+                    craftItemBtn: 'CRAFT ITEM',
+                    closeBtn: 'CLOSE',
                     craftedQty: 'Crafted ×{qtd}',
                     successRate: 'Success rate: 100%',
                     successRatePct: 'Success rate: {pct}%',
@@ -1332,6 +1340,13 @@ import { mergeSkillCatalogIntoLocales } from './skill_catalog_i18n';
                     augmentFeeLine: 'Fee: 5,000 Adena',
                     forging: 'FORGING...',
                     augmentBtn: 'AUGMENT',
+                    augmentWindowTitle: 'AUGMENT WEAPON',
+                    augmentColWeapon: 'WEAPON',
+                    augmentColStone: 'LIFE STONE',
+                    selectForAugment: 'SELECT FOR AUGMENT',
+                    augmentCompleteTitle: 'AUGMENTATION COMPLETE',
+                    augmentNewPowers: 'New Powers Awakened:',
+                    augmentExcellent: 'EXCELLENT!',
                     logAugmentIntro: '✨ AUGMENT LVL {level}! Hidden powers awakened:',
                     augmentResultTitle: '✦ AUGMENT LVL {level} ✦'
                 },
@@ -2409,6 +2424,13 @@ import { mergeSkillCatalogIntoLocales } from './skill_catalog_i18n';
                     needMaterials: 'FALTAM MATERIAIS',
                     emptyCategory: 'Nenhuma receita nesta categoria.',
                     selectRecipeHint: 'Selecione uma receita na grade acima.',
+                    windowTitle: 'CRAFT ANÃO',
+                    tabSpecial: '🌟 ESPECIAL',
+                    tabMats: '📦 MATERIAIS',
+                    recipeRequirements: 'Requisitos da receita',
+                    selectRecipeBlank: 'Selecione uma receita.',
+                    craftItemBtn: 'CRAFTAR ITEM',
+                    closeBtn: 'FECHAR',
                     craftedQty: 'Craftado ×{qtd}',
                     successRate: 'Taxa de sucesso: 100%',
                     successRatePct: 'Taxa de sucesso: {pct}%',
@@ -3222,6 +3244,13 @@ import { mergeSkillCatalogIntoLocales } from './skill_catalog_i18n';
                     augmentFeeLine: 'Taxa: 5.000 Adenas',
                     forging: 'FORJANDO...',
                     augmentBtn: 'AUGMENT',
+                    augmentWindowTitle: 'AUGMENT DE ARMA',
+                    augmentColWeapon: 'ARMA',
+                    augmentColStone: 'PEDRA DA VIDA',
+                    selectForAugment: 'SELECIONAR PARA AUGMENT',
+                    augmentCompleteTitle: 'AUGMENT CONCLUÍDO',
+                    augmentNewPowers: 'Novos poderes despertados:',
+                    augmentExcellent: 'EXCELENTE!',
                     logAugmentIntro: '✨ AUGMENT NV. {level}! Poderes ocultos despertados:',
                     augmentResultTitle: '✦ AUGMENT NV. {level} ✦'
                 },
@@ -3789,6 +3818,7 @@ import { mergeSkillCatalogIntoLocales } from './skill_catalog_i18n';
     };
 
     mergeSkillCatalogIntoLocales(window.I18N_LOCALES as Record<string, Record<string, unknown>>);
+    mergePolish12CatalogIntoLocales(window.I18N_LOCALES as Record<string, Record<string, unknown>>);
 })();
 
 export {};

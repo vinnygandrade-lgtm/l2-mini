@@ -2,6 +2,7 @@
  * Sistema de classes e evolução
  * Migrado: js/classes.js
  */
+import { classEvolutionDisplayDesc, classEvolutionDisplayName } from '../i18n/polish12_display';
 
 // ==========================================
 // hp/mp/atk/def/crit: multiplicadores de piscina de stats (ver core_stats.js).
@@ -382,8 +383,8 @@ function abrirMenuClasses() {
         // Só renderiza se ele já tiver nível pra ver, OU se for a próxima da linha dele
         container.innerHTML += `
             <div style="background: #111; border: 1px solid ${opcao.cor}; padding: 10px; border-radius: 5px; margin-bottom: 10px; text-align: left;">
-                <h4 style="margin: 0 0 5px 0; color: ${opcao.cor}; text-shadow: 1px 1px 0 #000;">${opcao.nome}</h4>
-                <p style="margin: 0 0 10px 0; font-size: 11px; color: #ccc;">${opcao.desc}</p>
+                <h4 style="margin: 0 0 5px 0; color: ${opcao.cor}; text-shadow: 1px 1px 0 #000;">${classEvolutionDisplayName(opcao.nome)}</h4>
+                <p style="margin: 0 0 10px 0; font-size: 11px; color: #ccc;">${classEvolutionDisplayDesc(opcao.nome, opcao.desc)}</p>
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     ${txtStatus}
                    <button class="btn-l2" style="width: auto; padding: 5px 15px; background: ${opcao.cor}; color: #000; font-weight: bold; margin: 0;" ${btnDisabled} onclick="confirmarTrocaClasse('${opcao.nome.replace(/'/g, "\\'")}')">${labelChange}</button>

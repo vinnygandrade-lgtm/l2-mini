@@ -4,6 +4,7 @@
  */
 import type { MergedRankingEntry } from '../types/game';
 import { registerGlobalFn } from '../runtime/register-global';
+import { creationRaceDesc, creationRaceDisplayName, olympiadRankDisplay } from '../i18n/polish12_display';
 
 type SeasonRewardEntry = {
     adena?: number;
@@ -53,7 +54,7 @@ const radarDeRacas = {
 // NOVO: Impedir criação se já houver personagem (Garantia de 1 char por conta)
 function verificarLimitePersonagem() {
     if (window.AuthEngine && window.AuthEngine.availableCharacters.length >= 1) {
-        window.l2Alert(typeof window.t === 'function' ? window.t('auth.charLimitReached') : "You already have a character on this account.");
+        window.l2Alert(typeof window.t === 'function' ? window.t('auth.charLimitReached') : 'auth.charLimitReached');
         mudarTela('screen-char-select');
         return false;
     }
@@ -110,7 +111,7 @@ async function proximaEtapa() {
     if (etapaAtual === "RACE") { 
         // NOVO: Verifica limite de personagem logo no início da criação
         if (window.AuthEngine && window.AuthEngine.availableCharacters.length >= 1) {
-            window.l2Alert(typeof window.t === 'function' ? window.t('auth.charLimitReached') : "Character limit reached (1 per account).");
+            window.l2Alert(typeof window.t === 'function' ? window.t('auth.charLimitReached') : 'auth.charLimitReached');
             mudarTela('screen-char-select');
             return;
         }
@@ -216,8 +217,8 @@ function atualizarPreview() {
         stepTitle.innerText = tt('creation.stepRace');
         const raca = (radarDeRacas && radarDeRacas[opcoes.RACE[window.indexSelecao]]) ? opcoes.RACE[window.indexSelecao] : "Human";
         const dados = radarDeRacas[raca];
-        infoName.innerText = raca;
-        infoDesc.innerText = dados.desc;
+        infoName.innerText = creationRaceDisplayName(raca);
+        infoDesc.innerText = creationRaceDesc(raca, dados.desc);
         btnConfirm.innerText = tt('creation.confirmRace');
 
         container.innerHTML = `
@@ -792,7 +793,7 @@ function renderizarSocial() {
     // Dados do Rank Visualizado (para o nome e ícone)
     const viewedTier = viewedRankName.split(' ')[0];
     
-    if (tierNameEl) tierNameEl.innerText = viewedRankName;
+    if (tierNameEl) tierNameEl.innerText = olympiadRankDisplay(viewedRankName);
     if (mmrPointsEl) mmrPointsEl.innerText = String(window.olympiadPoints || 0);
     
     if (rankStatusEl) {
@@ -1146,7 +1147,7 @@ async function renderizarRankingMundial() {
             
             <div style="display: flex; flex-direction: column; align-items: flex-end;">
                 <div style="color: #c084fc; font-weight: bold; font-size: 0.85em;">${jog.olympiadPoints} MMR</div>
-                <div style="font-size: 0.8em;">${iconeTier} <span style="color:#a1a1aa; font-size:0.85em;">${rankData.nomeCompleto || rankData.tier}</span></div>
+                <div style="font-size: 0.8em;">${iconeTier} <span style="color:#a1a1aa; font-size:0.85em;">${olympiadRankDisplay(rankData.nomeCompleto || rankData.tier)}</span></div>
             </div>
         </div>
         `;
@@ -1275,7 +1276,7 @@ function abrirPerfilJogadorRanking(nome, isBot) {
                 <div>
                     <h2 style="margin: 0; color: #22c55e; font-size: 1.2em;">${bot.nome}</h2>
                     <div style="color: #a1a1aa; font-size: 0.85em;">${inspectSubtitle}</div>
-                    <div style="color: #c084fc; font-size: 0.8em; font-weight: bold; margin-top: 2px;">${bot.olympiadPoints} MMR (${rankData.nomeCompleto})</div>
+                    <div style="color: #c084fc; font-size: 0.8em; font-weight: bold; margin-top: 2px;">${bot.olympiadPoints} MMR (${olympiadRankDisplay(rankData.nomeCompleto)})</div>
                     ${ascHtml}
                 </div>
             </div>

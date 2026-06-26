@@ -39,7 +39,8 @@ if (errors.length) {
   process.exit(1);
 }
 
-const stripped = outputText.replace(/^import\s+[\s\S]*?;\s*\r?\n/m, '');
+const stripped = outputText.replace(/^import\s+[\s\S]*?;\s*\r?\n/gm, '') +
+  '\nfunction mergeSkillCatalogIntoLocales() {}\nfunction mergePolish12CatalogIntoLocales() {}\n';
 if (!stripped.trim()) {
   console.error('check-locales-bundle: empty transpile output');
   process.exit(1);

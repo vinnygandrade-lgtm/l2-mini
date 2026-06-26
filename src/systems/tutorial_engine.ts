@@ -349,22 +349,21 @@ function tn(key: string, params?: Record<string, string | number>): string {
     function stepContent(step) {
         var s = (step === undefined || step === null) ? 0 : step;
         var c = {
-            title: tn('game.tutorial.s' + s + 'Title') || 'Tutorial',
-            body: tn('game.tutorial.s' + s + 'Body') || '...'
+            title: tn('game.tutorial.s' + s + 'Title'),
+            body: tn('game.tutorial.s' + s + 'Body')
         };
-        // Adiciona dicas visuais extras no texto se necessário
-        if (s === 4) c.body += ' ' + (tn('game.tutorial.hintSlot') || '(Tap an empty slot below)');
+        if (s === 4) c.body += ' ' + tn('game.tutorial.hintSlot');
         return c;
     }
 
     function primaryActionForStep(step) {
         var s = (step === undefined || step === null) ? 0 : step;
         if (s <= 1) {
-            return { label: tn('game.tutorial.next') || 'Next', fn: function () { setStep(s + 1); } };
+            return { label: tn('game.tutorial.next'), fn: function () { setStep(s + 1); } };
         }
         if (s === 2) {
             return {
-                label: tn('game.tutorial.openProfile') || 'Open Profile',
+                label: tn('game.tutorial.openProfile'),
                 fn: function () {
                     if (isTravelTabActive('perfil')) {
                         setStep(3);
@@ -376,7 +375,7 @@ function tn(key: string, params?: Record<string, string | number>): string {
         }
         if (s === 3) {
             return {
-                label: tn('game.tutorial.openSpellbook') || 'Open Spellbook',
+                label: tn('game.tutorial.openSpellbook'),
                 fn: function () {
                     if (isSpellbookModalOpen()) {
                         if (getProg().step === 3) setStep(4);
@@ -387,11 +386,11 @@ function tn(key: string, params?: Record<string, string | number>): string {
             };
         }
         if (s === 4) {
-            return { label: tn('game.tutorial.waitAssign') || 'Equip Skill', fn: function () {} };
+            return { label: tn('game.tutorial.waitAssign'), fn: function () {} };
         }
         if (s === 5) {
             return {
-                label: tn('game.tutorial.openWorld') || 'Open World',
+                label: tn('game.tutorial.openWorld'),
                 fn: function () {
                     if (isTravelTabActive('world')) {
                         setStep(6);
@@ -403,7 +402,7 @@ function tn(key: string, params?: Record<string, string | number>): string {
         }
         if (s === 6) {
             return {
-                label: tn('game.tutorial.openHunt') || 'Open Hunt',
+                label: tn('game.tutorial.openHunt'),
                 fn: function () {
                     if (isFlorestaScreenVisible()) {
                         setStep(7);
@@ -415,7 +414,7 @@ function tn(key: string, params?: Record<string, string | number>): string {
         }
         if (s === 7) {
             return {
-                label: tn('game.tutorial.searchHintBtn') || 'Hint',
+                label: tn('game.tutorial.searchHintBtn'),
                 fn: function () {
                     try {
                         if (typeof window.escreverLog === 'function') {
@@ -426,12 +425,12 @@ function tn(key: string, params?: Record<string, string | number>): string {
             };
         }
         if (s === 8) {
-            return { label: tn('game.tutorial.waitAttack') || 'Attack!', fn: function () {} };
+            return { label: tn('game.tutorial.waitAttack'), fn: function () {} };
         }
         if (s === 9) {
-            return { label: tn('game.tutorial.next') || 'Next', fn: function () { setStep(10); } };
+            return { label: tn('game.tutorial.next'), fn: function () { setStep(10); } };
         }
-        return { label: tn('game.tutorial.done') || 'Done', fn: function () { setStep(DONE_STEP); } };
+        return { label: tn('game.tutorial.done'), fn: function () { setStep(DONE_STEP); } };
     }
 
     function render() {
@@ -452,8 +451,8 @@ function tn(key: string, params?: Record<string, string | number>): string {
             var skipBtn = document.getElementById('tutorial-coach-skip');
             var progressFill = document.getElementById('tutorial-coach-progress-bar');
 
-            if (titleEl) titleEl.textContent = content.title || tn('game.tutorial.badge') || 'Tutorial';
-            if (bodyEl) bodyEl.textContent = content.body || '...';
+            if (titleEl) titleEl.textContent = content.title || tn('game.tutorial.badge');
+            if (bodyEl) bodyEl.textContent = content.body;
 
             if (progressFill) {
                 var pct = Math.round((step / DONE_STEP) * 100);
@@ -462,7 +461,7 @@ function tn(key: string, params?: Record<string, string | number>): string {
 
             var prim = primaryActionForStep(step);
             if (nextBtn) {
-                nextBtn.textContent = prim.label || 'Next';
+                nextBtn.textContent = prim.label;
                 nextBtn.onclick = function () {
                     try {
                         prim.fn();
@@ -475,7 +474,7 @@ function tn(key: string, params?: Record<string, string | number>): string {
 
             if (backBtn) {
                 backBtn.style.display = (step > 0 && step !== 4) ? 'inline-flex' : 'none';
-                backBtn.textContent = tn('game.tutorial.back') || 'Back';
+                backBtn.textContent = tn('game.tutorial.back');
                 backBtn.onclick = function () {
                     setStep(step - 1);
                 };

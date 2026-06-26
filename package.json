@@ -13,6 +13,7 @@
     "typecheck": "tsc --noEmit",
     "check:i18n": "node scripts/check-locales-bundle.mjs",
     "generate:skill-i18n": "node scripts/build-skill-pt-catalog.mjs && node scripts/generate-skill-i18n.mjs",
+    "generate:polish12-i18n": "node scripts/generate-polish12-i18n.mjs",
     "validate": "npm run typecheck && npm run check:i18n && npm run build",
     "test:smoke": "playwright test",
     "test:smoke:ui": "playwright test --ui",

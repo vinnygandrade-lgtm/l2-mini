@@ -370,15 +370,15 @@
     </div>
 
     <div id="janela-augment" class="store-window">
-        <div class="store-header"><span>AUGMENT WEAPON</span></div>
+        <div class="store-header"><span data-i18n="game.enchantUi.augmentWindowTitle">AUGMENT WEAPON</span></div>
         <div class="store-body store-body--aug">
             <div class="enchant-split">
                 <div class="enchant-col">
-                    <span class="enchant-col-label">WEAPON</span>
+                    <span class="enchant-col-label" data-i18n="game.enchantUi.augmentColWeapon">WEAPON</span>
                     <div id="augment-equip-grid" class="enchant-box"></div>
                 </div>
                 <div class="enchant-col">
-                    <span class="enchant-col-label">LIFE STONE</span>
+                    <span class="enchant-col-label" data-i18n="game.enchantUi.augmentColStone">LIFE STONE</span>
                     <div id="augment-stone-grid" class="enchant-box"></div>
                 </div>
             </div>
@@ -394,55 +394,55 @@
             </div>
 
             <div class="enchant-actions">
-                <button type="button" id="btn-executar-augment" class="btn-l2" onclick="executarAugment()" disabled>AUGMENT</button>
-                <button type="button" class="btn-l2 btn-aug-cancel" onclick="fecharAugment()">CANCEL</button>
+                <button type="button" id="btn-executar-augment" class="btn-l2" data-i18n="game.enchantUi.augmentBtn" onclick="executarAugment()" disabled>AUGMENT</button>
+                <button type="button" class="btn-l2 btn-aug-cancel" data-i18n="modal.cancel" onclick="fecharAugment()">CANCEL</button>
             </div>
         </div>
     </div>
 
     <div id="janela-augment-acao" class="store-window">
-        <div class="store-header"><span>SELECT GEAR</span></div>
+        <div class="store-header"><span data-i18n="game.enchantUi.selectGear">SELECT GEAR</span></div>
         <div class="aug-acao-body">
             <div class="store-item-slot aug-acao-slot">
                 <img id="augment-acao-img" src="" alt="">
             </div>
             <div id="augment-acao-desc"></div>
-            <button type="button" id="btn-augment-confirmar-selecao" class="btn-l2">SELECT FOR AUGMENT</button>
+            <button type="button" id="btn-augment-confirmar-selecao" class="btn-l2" data-i18n="game.enchantUi.selectForAugment">SELECT FOR AUGMENT</button>
             <button type="button" class="btn-l2 btn-aug-acao-back" onclick="fecharAugmentAcao()">BACK</button>
         </div>
     </div>
 
     <div id="janela-augment-resultado" class="store-window">
-        <div id="aug-res-header" class="store-header"><span id="aug-res-title-text">AUGMENTATION COMPLETE</span></div>
+        <div id="aug-res-header" class="store-header"><span id="aug-res-title-text" data-i18n="game.enchantUi.augmentCompleteTitle">AUGMENTATION COMPLETE</span></div>
         <div class="aug-res-body">
            <div id="aug-res-img-slot" class="store-item-slot">
               <img id="aug-res-img" src="" alt="">
             </div>
             <h3 id="aug-res-nome">Nome da Arma</h3>
             <div id="aug-res-box">
-               <div id="aug-res-subtitle">Novos Poderes Despertados:</div>
+               <div id="aug-res-subtitle" data-i18n="game.enchantUi.augmentNewPowers">New Powers Awakened:</div>
                <div id="aug-res-status"></div>
             </div>
-            <button type="button" id="aug-res-btn" class="btn-l2" onclick="fecharAugmentResultado()">EXCELLENT!</button>
+            <button type="button" id="aug-res-btn" class="btn-l2" data-i18n="game.enchantUi.augmentExcellent" onclick="fecharAugmentResultado()">EXCELLENT!</button>
         </div>
     </div>
 
     <div id="janela-craft" class="store-window">
-        <div class="store-header"><span>DWARVEN CRAFTING</span></div>
+        <div class="store-header"><span data-i18n="game.craft.windowTitle">DWARVEN CRAFTING</span></div>
         <div id="craft-tabs">
-            <button type="button" class="btn-l2" id="tab-craft-special" onclick="mudarAbaCraft('special')">🌟 SPECIAL</button>
-            <button type="button" class="btn-l2" id="tab-craft-mats" onclick="mudarAbaCraft('mats')">📦 MATERIALS</button>
+            <button type="button" class="btn-l2" id="tab-craft-special" data-i18n="game.craft.tabSpecial" onclick="mudarAbaCraft('special')">🌟 SPECIAL</button>
+            <button type="button" class="btn-l2" id="tab-craft-mats" data-i18n="game.craft.tabMats" onclick="mudarAbaCraft('mats')">📦 MATERIALS</button>
         </div>
         <div class="store-body store-body--craft">
             <div id="craft-receitas-grid" class="store-items-grid"></div>
             <div id="craft-detalhes" class="store-info-panel">
-                <div class="craft-d-title">Recipe Requirements</div>
-                <div id="craft-detalhe-texto">Select a recipe.</div>
+                <div class="craft-d-title" data-i18n="game.craft.recipeRequirements">Recipe Requirements</div>
+                <div id="craft-detalhe-texto" data-i18n="game.craft.selectRecipeBlank">Select a recipe.</div>
                 <div id="craft-escolha-vesper"></div>
                 <div id="craft-ingredientes"></div>
                 <div class="craft-actions">
-                    <button type="button" id="btn-executar-craft" class="btn-l2" onclick="executarCraft()">CRAFT ITEM</button>
-                    <button type="button" class="btn-l2 btn-craft-close" onclick="fecharJanelaCraft()">CLOSE</button>
+                    <button type="button" id="btn-executar-craft" class="btn-l2" data-i18n="game.craft.craftItemBtn" onclick="executarCraft()">CRAFT ITEM</button>
+                    <button type="button" class="btn-l2 btn-craft-close" data-i18n="game.craft.closeBtn" onclick="fecharJanelaCraft()">CLOSE</button>
                 </div>
             </div>
         </div>

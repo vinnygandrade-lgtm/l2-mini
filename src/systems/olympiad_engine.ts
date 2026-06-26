@@ -7,7 +7,6 @@
  *   (mesma verdade que inspeção de perfil). Bots: só gerarBotCompleto.
  * - Ver GDD §7 — Inspeção cloud (bullet Olimpíada) e §11.5 checklist item 10.
  */
-
 import type {
   BotRankingSeed,
   ItemCatalogBase,
@@ -19,6 +18,7 @@ import type {
   SupabaseQueryBuilder,
 } from '../types/game';
 import { registerGlobal } from '../runtime/register-global';
+import { olympiadRankDisplay } from '../i18n/polish12_display';
 
 function olyImg(id: string): HTMLImageElement | null {
     const el = document.getElementById(id);
@@ -336,7 +336,7 @@ const OlympiadEngine = {
                 <div style="display:flex; align-items:center; gap:12px;">
                     <div style="font-size:1.5em;">${this.getIconForTier(rTier)}</div>
                     <div style="display:flex; flex-direction:column;">
-                        <span style="color:#fff; font-weight:bold; font-size:0.9em;">${rankId}</span>
+                        <span style="color:#fff; font-weight:bold; font-size:0.9em;">${olympiadRankDisplay(rankId)}</span>
                         ${rewardHtml}
                     </div>
                 </div>
@@ -525,7 +525,7 @@ const OlympiadEngine = {
                     this.salvarRecompensasResgatadas();
                     
                     if (window.mostrarAviso) {
-                        window.mostrarAviso(this.olyT('olympiad.rewardClaimSuccess', { rank: rankId }));
+                        window.mostrarAviso(this.olyT('olympiad.rewardClaimSuccess', { rank: olympiadRankDisplay(rankId) }));
                     }
                     
                     if (typeof window.carregarMailbox === 'function') void window.carregarMailbox();
@@ -566,17 +566,18 @@ const OlympiadEngine = {
                 recompensas.push({ id: it.id, nome: it.id, qtd: it.qtd });
             });
             
-            const texto = this.olyT('olympiad.rankRewardMailBody', { rank: rankId });
+            const rankLabel = olympiadRankDisplay(rankId);
+            const texto = this.olyT('olympiad.rankRewardMailBody', { rank: rankLabel });
             
             await window.enviarMail!(
                 window.charName,
                 "Olympiad Manager",
-                this.olyT('olympiad.rankRewardMailSubject', { rank: rankId }),
+                this.olyT('olympiad.rankRewardMailSubject', { rank: rankLabel }),
                 "system",
                 { texto: texto, recompensas: recompensas }
             );
 
-            if (window.mostrarAviso) window.mostrarAviso(this.olyT('olympiad.offlineRewardSent', { rank: rankId }));
+            if (window.mostrarAviso) window.mostrarAviso(this.olyT('olympiad.offlineRewardSent', { rank: rankLabel }));
         }
 
         // Atualiza o modal e o card
@@ -755,7 +756,7 @@ const OlympiadEngine = {
                         <div style="color: #c084fc; font-weight: bold; font-size: 0.85em;">${mmr} MMR</div>
                         <div style="font-size: 0.7em; color: #a1a1aa; font-weight: bold; display: flex; align-items: center; justify-content: flex-end; gap: 3px;">
                             <span>${iconeTier}</span>
-                            <span style="letter-spacing: 0.5px;">${jogRank.nomeCompleto.toUpperCase()}</span>
+                            <span style="letter-spacing: 0.5px;">${olympiadRankDisplay(jogRank.nomeCompleto).toUpperCase()}</span>
                         </div>
                     </div>
                 </div>
@@ -1949,7 +1950,7 @@ const OlympiadEngine = {
         const rank = this.getRank(window.olympiadPoints);
         const tierEl = document.getElementById('oly-res-mmr-tier');
         if (tierEl) {
-            tierEl.innerText = rank.nomeCompleto;
+            tierEl.innerText = olympiadRankDisplay(rank.nomeCompleto);
             // Cores baseadas no Tier
             let color = "#fde047";
             switch(rank.tier) {
